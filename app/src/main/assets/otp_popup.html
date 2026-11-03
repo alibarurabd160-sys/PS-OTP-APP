@@ -80,13 +80,18 @@ label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
 .chip .x{background:none;border:none;box-shadow:none;color:inherit;opacity:.65;width:auto;padding:0 5px;font-size:17px;line-height:1}
 .addrow{display:flex;gap:8px;margin-bottom:14px}
 .addrow input{flex:1}.addrow button{width:auto}
-#current{border-color:rgba(77,131,255,.35);background:linear-gradient(160deg,rgba(77,131,255,.14),var(--card) 55%)}
+.job{border-color:rgba(77,131,255,.35);background:linear-gradient(160deg,rgba(77,131,255,.14),var(--card) 55%)}
+.job.done{border-color:rgba(53,212,154,.55);background:linear-gradient(160deg,rgba(53,212,154,.16),var(--card) 55%)}
+.job.done .timer{color:var(--ok)}
+.jobhead{display:flex;align-items:center;justify-content:space-between;margin:0 2px 8px}
+.jobhead h2{margin:0}
 .number{font-size:29px;font-weight:700;letter-spacing:.03em;margin:4px 0;word-break:break-all;font-variant-numeric:tabular-nums;
   background:linear-gradient(90deg,var(--text),var(--accent3));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .meta{color:var(--muted);font-size:13px}
 .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
 .timer{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
-#current.waiting .timer::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--err);animation:blink 1.1s ease-in-out infinite}
+
+.job.waiting .timer::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--err);animation:blink 1.1s ease-in-out infinite}
 @keyframes blink{50%{opacity:.2;transform:scale(.7)}}
 .track{height:5px;border-radius:5px;background:var(--card2);overflow:hidden;margin-top:12px}
 .track i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));transition:width .5s linear}
@@ -112,6 +117,10 @@ label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
 .hist b{font-size:15px}
 .hist .otpv{color:var(--ok);font-weight:700;font-size:17px;letter-spacing:.08em}
 .empty{color:var(--muted);font-size:13.5px;margin:0}
+.opt{display:flex;align-items:center;gap:11px;margin:0 0 12px;padding:11px 13px;background:var(--card2);border:1px solid var(--line);
+  border-radius:13px;cursor:pointer;color:var(--text);font-size:14px;font-weight:500;user-select:none}
+.opt input{width:20px;height:20px;flex:none;margin:0;padding:0;accent-color:var(--accent);cursor:pointer}
+.opt small{display:block;color:var(--muted);font-size:12px;font-weight:400}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);z-index:9;background:var(--text);color:var(--bg);
   padding:9px 18px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:all .22s;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
@@ -150,20 +159,14 @@ label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
       <input id="newRid" inputmode="numeric" placeholder="নতুন রেঞ্জ, যেমন 26134">
       <button class="ghost" id="btnAdd">যোগ করুন</button>
     </div>
+    <label class="opt" for="optCode">
+      <input type="checkbox" id="optCode">
+      <span>কান্ট্রি কোড সহ কপি<small id="optHint">টিক না দিলে কোড ছাড়া কপি হবে</small></span>
+    </label>
     <button id="btnGet">নাম্বার নিন</button>
   </section>
 
-  <section class="card" id="current" hidden>
-    <div class="row"><div class="meta" id="cMeta"></div><div class="timer" id="timer"></div></div>
-    <div class="row">
-      <div class="number" id="cNum"></div>
-      <button class="ghost icon" id="cCopy">কপি</button>
-    </div>
-    <div id="cOtpBox"></div>
-    <div class="status" id="cStatus"></div>
-    <div class="track" id="track" hidden><i id="bar"></i></div>
-    <div class="btns" id="cBtns"></div>
-  </section>
+  <div id="jobs"></div>
 
   <section class="card">
     <div class="row" style="margin-bottom:10px">
@@ -186,8 +189,7 @@ let cfg = store.get('cfg', { base: 'https://min-bot-emf8.onrender.com/api/v1', k
 let ranges = store.get('ranges', ['26134']);
 let activeRid = store.get('activeRid', ranges[0] || '');
 let history = store.get('history', []);
-let current = null;
-let pollId = 0;
+let jobSeq = 0;
 
 const WAIT_SECONDS = 25;
 const MAX_MINUTES = 10;
@@ -205,6 +207,66 @@ async function copy(text){
   try { navigator.vibrate && navigator.vibrate(30); } catch(e){}
   toast('কপি হয়েছে');
 }
+/* ---------- কান্ট্রি কোড ---------- */
+const CC = new Set(['1','7']);
+[[20,20],[27,27],[30,34],[36,36],[39,41],[43,49],[51,58],[60,66],[81,82],[84,84],[86,86],[90,95],[98,98],
+ [211,213],[216,216],[218,218],[220,258],[260,269],[290,291],[297,299],[350,359],[370,389],[420,421],[423,423],
+ [500,509],[590,599],[670,692],[850,850],[852,853],[855,856],[880,880],[886,886],[960,968],[970,977],[992,996],[998,998]
+].forEach(([a,b]) => { for (let i = a; i <= b; i++) CC.add(String(i)); });
+
+function stripCode(digits){
+  digits = String(digits || '').replace(/\D/g, '');
+  for (let n = 1; n <= 3; n++){
+    if (CC.has(digits.slice(0, n)) && digits.length > n + 4) return digits.slice(n);
+  }
+  return digits;
+}
+function numberToCopy(j){
+  if (!j) return '';
+  const digits = String(j.number || j.full || '').replace(/\D/g, '');
+  return withCode ? '+' + digits : stripCode(digits);
+}
+
+/* অটো কপি: ব্রাউজার আটকালে পরের ট্যাপে কপি হবে */
+let pendingCopy = null;
+async function silentCopy(text){
+  try {
+    if (window.Android && window.Android.copyText){ window.Android.copyText(text); return true; }
+  } catch(e){}
+  try { await navigator.clipboard.writeText(text); return true; } catch(e){}
+  try {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove(); return !!ok;
+  } catch(e){ return false; }
+}
+async function autoCopy(text){
+  if (!text) return;
+  if (await silentCopy(text)){
+    pendingCopy = null;
+    try { navigator.vibrate && navigator.vibrate(30); } catch(e){}
+    toast('কপি হয়েছে: ' + text);
+  } else {
+    pendingCopy = text;
+    toast('কপি করতে স্ক্রিনে একবার ট্যাপ করুন');
+  }
+}
+['pointerdown', 'keydown', 'focus'].forEach(ev => window.addEventListener(ev, async () => {
+  if (!pendingCopy) return;
+  const t = pendingCopy;
+  if (await silentCopy(t)){ pendingCopy = null; toast('কপি হয়েছে: ' + t); }
+}, true));
+
+let withCode = store.get('withCode', false);
+function syncOpt(){
+  $('optCode').checked = withCode;
+  $('optHint').textContent = withCode ? 'কোড সহ কপি হবে (যেমন +880...)' : 'টিক না দিলে কোড ছাড়া কপি হবে';
+}
+$('optCode').onchange = () => {
+  withCode = $('optCode').checked; store.set('withCode', withCode); syncOpt();
+  if (lastJob && lastJob.number) autoCopy(numberToCopy(lastJob));
+};
+
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -291,136 +353,167 @@ $('btnClear').onclick = () => {
   if (!history.length) return;
   if (confirm('আগের সব নাম্বারের তালিকা মুছে ফেলবেন?')){ history = []; store.set('history', history); renderHistory(); }
 };
-function saveHistory(){
-  if (!current) return;
-  const i = history.findIndex(h => h.id === current.id);
-  const item = { id: current.id, full: current.full, otp: current.otp || '', service: current.service || '', time: current.time };
+function saveHistory(c){
+  if (!c || !c.full) return;
+  const i = history.findIndex(h => h.id === c.id);
+  const item = { id: c.id, full: c.full, otp: c.otp || '', service: c.service || '', time: c.time };
   if (i >= 0) history[i] = item; else history.unshift(item);
   history = history.slice(0, 30);
   store.set('history', history); renderHistory();
 }
 
-/* ---------- current number card ---------- */
-function setStatus(kind, text, spin){
-  const s = $('cStatus'); s.className = 'status ' + (kind || '');
+/* ---------- নাম্বার কার্ড: প্রতিটা নাম্বার আলাদা করে ব্যাকগ্রাউন্ডে চলে ---------- */
+const jobs = [];
+const MAX_ACTIVE = 10;
+let lastJob = null;
+const pad = n => String(Math.floor(n)).padStart(2, '0');
+
+function jobStatus(j, kind, text, spin){
+  const s = j.q('status'); s.className = 'status ' + (kind || '');
   s.innerHTML = (spin ? '<div class="spin"></div>' : '') + '<span>' + esc(text) + '</span>';
 }
-function setButtons(list){
-  const b = $('cBtns'); b.innerHTML = '';
+function jobButtons(j, list){
+  const b = j.q('btns'); b.innerHTML = '';
   list.forEach(x => {
     const el = document.createElement('button');
     el.textContent = x.label; if (x.ghost) el.className = 'ghost';
     el.onclick = x.fn; b.appendChild(el);
   });
 }
-let tickT = 0;
-const pad = n => String(Math.floor(n)).padStart(2, '0');
-function startTick(id){
-  clearInterval(tickT);
-  const t0 = Date.now(), bar = $('bar'), tm = $('timer');
-  $('track').hidden = false; bar.style.width = '0'; $('current').classList.add('waiting');
-  tickT = setInterval(() => {
-    if (id !== pollId){ clearInterval(tickT); return; }
+function jobStopTick(j){
+  clearInterval(j.tickT); j.q('track').hidden = true; j.el.classList.remove('waiting');
+}
+function jobStartTick(j, tok){
+  clearInterval(j.tickT);
+  const t0 = Date.now(), bar = j.q('bar'), tm = j.q('timer');
+  j.q('track').hidden = false; bar.style.width = '0'; j.el.classList.add('waiting');
+  j.tickT = setInterval(() => {
+    if (tok !== j.tok){ clearInterval(j.tickT); return; }
     const sec = (Date.now() - t0) / 1000;
     tm.textContent = pad(sec / 60) + ':' + pad(sec % 60);
     bar.style.width = Math.min(100, sec / (MAX_MINUTES * 60) * 100) + '%';
   }, 500);
 }
-function stopTick(){ clearInterval(tickT); $('track').hidden = true; $('current').classList.remove('waiting'); }
-function showOtp(otp){
-  $('cOtpBox').innerHTML = '<div class="otp">' + String(otp).split('').map(d => '<span>' + esc(d) + '</span>').join('') + '</div>';
+function jobShowOtp(j){
+  j.q('otp').innerHTML = '<div class="otp">' + String(j.otp).split('').map(d => '<span>' + esc(d) + '</span>').join('') + '</div>';
+  j.q('otp').firstChild.onclick = () => copy(j.otp);
+}
+function removeJob(j){
+  j.tok++; clearInterval(j.tickT); j.el.remove();
+  const i = jobs.indexOf(j); if (i >= 0) jobs.splice(i, 1);
+  if (lastJob === j) lastJob = jobs[jobs.length - 1] || null;
+}
+function activeCount(){ return jobs.filter(j => j.polling).length; }
+
+function newJobCard(rid){
+  const j = { id: Date.now() * 100 + (jobSeq++ % 100), rid, full: '', number: '', otp: '', service: '', tok: 0, tickT: 0, polling: false, time: '' };
+  const el = document.createElement('section'); el.className = 'card job';
+  el.innerHTML =
+    '<div class="row"><div class="meta" data-k="meta"></div><div class="timer" data-k="timer"></div></div>' +
+    '<div class="row"><div class="number" data-k="num">...</div><button class="ghost icon" data-k="copy">কপি</button></div>' +
+    '<div data-k="otp"></div><div class="status" data-k="status"></div>' +
+    '<div class="track" data-k="track" hidden><i data-k="bar"></i></div><div class="btns" data-k="btns"></div>';
+  j.el = el; j.q = k => el.querySelector('[data-k="' + k + '"]');
+  j.q('meta').textContent = 'রেঞ্জ ' + rid;
+  j.q('copy').onclick = () => j.number && copy(numberToCopy(j));
+  $('jobs').prepend(el); jobs.push(j);
+  return j;
 }
 
-async function poll(){
-  const id = ++pollId, num = current.number;
+async function pollJob(j){
+  const tok = ++j.tok, num = j.number;
   const deadline = Date.now() + MAX_MINUTES * 60000;
   let errs = 0;
-  $('cOtpBox').innerHTML = '';
-  setStatus('', 'OTP-র জন্য অপেক্ষা করা হচ্ছে...', true);
-  startTick(id);
-  setButtons([{ label: 'অপেক্ষা বন্ধ করুন', ghost: true, fn: () => { pollId++; stopped(); } }]);
+  j.polling = true; j.q('otp').innerHTML = ''; j.el.classList.remove('done');
+  jobStatus(j, '', 'OTP-র জন্য অপেক্ষা করা হচ্ছে...', true);
+  jobStartTick(j, tok);
+  jobButtons(j, [{ label: 'অপেক্ষা বন্ধ করুন', ghost: true, fn: () => { j.tok++; j.polling = false; jobStopped(j); } }]);
 
-  while (id === pollId){
-    if (Date.now() > deadline){ return finish('warn', MAX_MINUTES + ' মিনিটে OTP আসেনি'); }
+  while (tok === j.tok){
+    if (Date.now() > deadline){ j.polling = false; return jobFinish(j, 'warn', MAX_MINUTES + ' মিনিটে OTP আসেনি'); }
     const t0 = Date.now();
     const r = await api('/otp?number=' + encodeURIComponent(num) + '&wait=' + WAIT_SECONDS);
-    if (id !== pollId) return;
+    if (tok !== j.tok) return;
     if (r.fail){
-      if (++errs >= 3) return finish('err', r.fail);
-      await sleep(3000); continue;
+      if (++errs >= 4){ j.polling = false; return jobFinish(j, 'err', r.fail); }
+      await sleep(1500); continue;
     }
-    const j = r.json;
-    if (j.meta && j.meta.code === 200 && j.data){
-      current.otp = j.data.otp; current.service = j.data.service || '';
-      stopTick(); saveHistory(); showOtp(current.otp); notifyHost('otp', current.otp);
-      try { navigator.vibrate && navigator.vibrate(250); } catch(e){}
-      setStatus('ok', 'OTP এসেছে' + (current.service ? ' (' + current.service + ')' : ''));
-      setButtons([
-        { label: 'OTP কপি করুন', fn: () => copy(current.otp) },
-        { label: 'নতুন নাম্বার', ghost: true, fn: getNumber }
+    const x = r.json;
+    if (x.meta && x.meta.code === 200 && x.data){
+      j.polling = false;
+      j.otp = x.data.otp; j.service = x.data.service || '';
+      jobStopTick(j); saveHistory(j); jobShowOtp(j);
+      j.el.classList.add('done'); $('jobs').prepend(j.el);
+      j.q('timer').textContent = '✓';
+      notifyHost('otp', j.otp);
+      lastJob = j;
+      autoCopy(String(j.otp));
+      try { navigator.vibrate && navigator.vibrate([120, 60, 120]); } catch(e){}
+      jobStatus(j, 'ok', 'OTP এসেছে' + (j.service ? ' (' + j.service + ')' : ''));
+      jobButtons(j, [
+        { label: 'OTP কপি করুন', fn: () => copy(j.otp) },
+        { label: 'সরিয়ে দিন', ghost: true, fn: () => removeJob(j) }
       ]);
       return;
     }
-    if (j.meta && j.meta.code === 404) return finish('err', 'নাম্বারের মেয়াদ শেষ বা পাওয়া যায়নি');
-    if (j.meta && j.meta.status === 'waiting'){
-      if (Date.now() - t0 < 2000) await sleep(1500);
+    if (x.meta && x.meta.code === 404){ j.polling = false; return jobFinish(j, 'err', 'নাম্বারের মেয়াদ শেষ বা পাওয়া যায়নি'); }
+    if (x.meta && x.meta.status === 'waiting'){
+      if (Date.now() - t0 < 1000) await sleep(300);
       continue;
     }
-    if (++errs >= 3) return finish('err', 'অপ্রত্যাশিত উত্তর: ' + JSON.stringify(j).slice(0, 120));
-    await sleep(2000);
+    if (++errs >= 4){ j.polling = false; return jobFinish(j, 'err', 'অপ্রত্যাশিত উত্তর: ' + JSON.stringify(x).slice(0, 120)); }
+    await sleep(800);
   }
 }
-function finish(kind, text){
-  stopTick(); setStatus(kind, text);
-  setButtons([
-    { label: 'আবার অপেক্ষা করুন', fn: poll },
-    { label: 'নতুন নাম্বার', ghost: true, fn: getNumber }
+function jobFinish(j, kind, text){
+  jobStopTick(j); jobStatus(j, kind, text);
+  jobButtons(j, [
+    { label: 'আবার অপেক্ষা করুন', fn: () => pollJob(j) },
+    { label: 'সরিয়ে দিন', ghost: true, fn: () => removeJob(j) }
   ]);
 }
-function stopped(){
-  stopTick(); setStatus('warn', 'অপেক্ষা বন্ধ করা হয়েছে');
-  setButtons([
-    { label: 'আবার অপেক্ষা করুন', fn: poll },
-    { label: 'নতুন নাম্বার', ghost: true, fn: getNumber }
+function jobStopped(j){
+  jobStopTick(j); jobStatus(j, 'warn', 'অপেক্ষা বন্ধ করা হয়েছে');
+  jobButtons(j, [
+    { label: 'আবার অপেক্ষা করুন', fn: () => pollJob(j) },
+    { label: 'সরিয়ে দিন', ghost: true, fn: () => removeJob(j) }
   ]);
 }
 
 async function getNumber(){
   if (!activeRid){ toast('আগে একটা রেঞ্জ বাছুন'); return; }
-  pollId++; stopTick(); $('timer').textContent = '';
+  if (activeCount() >= MAX_ACTIVE){ toast('একসাথে সর্বোচ্চ ' + MAX_ACTIVE + 'টা নাম্বার চলবে'); return; }
   $('btnGet').disabled = true;
-  $('current').hidden = false;
-  $('cMeta').textContent = 'রেঞ্জ ' + activeRid;
-  $('cNum').textContent = '...'; $('cOtpBox').innerHTML = ''; $('cBtns').innerHTML = '';
-  setStatus('', 'নাম্বার আনা হচ্ছে...', true);
-  const r = await api('/getnum', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rid: activeRid }) });
+  const j = newJobCard(activeRid);
+  jobStatus(j, '', 'নাম্বার আনা হচ্ছে...', true);
+  const r = await api('/getnum', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rid: j.rid }) });
   $('btnGet').disabled = false;
-  const retry = [{ label: 'আবার চেষ্টা করুন', fn: getNumber }];
-  if (r.fail){ $('cNum').textContent = '-'; setStatus('err', r.fail); setButtons(retry); return; }
-  const j = r.json, code = j.meta && j.meta.code;
-  if (code === 200 && j.data){
-    const full = j.data.full_number || ('+' + j.data.no_plus_number);
-    current = {
-      id: Date.now(), full, rid: activeRid,
-      number: j.data.no_plus_number || (j.data.full_number || '').replace('+', ''),
-      time: new Date().toLocaleString('bn-BD', { hour: 'numeric', minute: '2-digit', day: 'numeric', month: 'short' })
-    };
-    $('cNum').textContent = full;
-    $('cMeta').textContent = 'রেঞ্জ ' + activeRid + (j.data.country ? ' · ' + j.data.country : '');
-    saveHistory();
-    notifyHost('number', current.number, current.full);
-    poll();
-  } else {
-    $('cNum').textContent = '-';
-    if (code === 2946) setStatus('warn', 'এই রেঞ্জে এখন নাম্বার নেই। অন্য রেঞ্জ বা একটু পরে চেষ্টা করুন।');
-    else if (code === 401) setStatus('err', 'API Key ভুল। সেটিংসে ঠিক করুন।');
-    else setStatus('err', 'সমস্যা: ' + JSON.stringify(j).slice(0, 140));
-    setButtons(retry);
-  }
+  const fail = text => {
+    j.q('num').textContent = '-'; jobStatus(j, 'err', text);
+    jobButtons(j, [
+      { label: 'আবার চেষ্টা করুন', fn: () => { removeJob(j); getNumber(); } },
+      { label: 'সরিয়ে দিন', ghost: true, fn: () => removeJob(j) }
+    ]);
+  };
+  if (r.fail){ fail(r.fail); return; }
+  const x = r.json, code = x.meta && x.meta.code;
+  if (code === 200 && x.data){
+    j.full = x.data.full_number || ('+' + x.data.no_plus_number);
+    j.number = x.data.no_plus_number || (x.data.full_number || '').replace('+', '');
+    j.time = new Date().toLocaleString('bn-BD', { hour: 'numeric', minute: '2-digit', day: 'numeric', month: 'short' });
+    j.q('num').textContent = j.full;
+    j.q('meta').textContent = 'রেঞ্জ ' + j.rid + (x.data.country ? ' · ' + x.data.country : '');
+    lastJob = j;
+    saveHistory(j);
+    notifyHost('number', j.number, j.full);
+    autoCopy(numberToCopy(j));
+    pollJob(j);
+  } else if (code === 2946) fail('এই রেঞ্জে এখন নাম্বার নেই। অন্য রেঞ্জ বা একটু পরে চেষ্টা করুন।');
+  else if (code === 401) fail('API Key ভুল। সেটিংসে ঠিক করুন।');
+  else fail('সমস্যা: ' + JSON.stringify(x).slice(0, 140));
 }
 
 $('btnGet').onclick = getNumber;
-$('cCopy').onclick = () => current && copy(current.full);
 
 /* হোস্ট অ্যাপে নাম্বার/OTP পাঠায়: Android WebView বা ওয়েবপেজের iframe */
 function notifyHost(type, a, b){
@@ -450,7 +543,7 @@ if (window.Android){
     if (!isIn(document.activeElement) && window.Android.setFocusable) window.Android.setFocusable(false);
   }, 250));
 }
-renderRanges(); renderHistory();
+syncOpt(); renderRanges(); renderHistory();
 </script>
 </body>
 </html>
