@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0e1a2b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>OTP নাম্বার</title>
+<title>PS NUMBER</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -124,33 +124,86 @@ label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);z-index:9;background:var(--text);color:var(--bg);
   padding:9px 18px;border-radius:999px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:all .22s;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* লিকুইড গ্লাস থিম + HyperOS-স্টাইল স্প্রিং অ্যানিমেশন */
+:root{--bg:#050a1a;--bg2:#0a1330;--card:rgba(255,255,255,.09);--card2:rgba(255,255,255,.14);--line:rgba(255,255,255,.2);--hi:rgba(255,255,255,.38);
+  --text:#f3f6ff;--muted:#a3b3d6;--accent:#3d7bff;--accent2:#7c5cff;--accent3:#3ddbd0;--on-accent:#fff;--ok:#4be0ad;--warn:#ffc15e;--err:#ff8a94;--glow:rgba(61,123,255,.45);
+  --spring:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.22,1,.36,1)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#e6eeff;--bg2:#d7e3ff;--card:rgba(255,255,255,.55);--card2:rgba(255,255,255,.78);--line:rgba(36,87,255,.16);--hi:rgba(255,255,255,.95);
+  --text:#12213a;--muted:#51658a;--accent:#2457ff;--accent2:#6a45ff;--accent3:#0aa6c2;--ok:#0c8f61;--warn:#a86300;--err:#c92f45;--glow:rgba(36,87,255,.3)}}
+.aurora i{width:320px;height:320px;opacity:.55;filter:blur(60px);animation-duration:18s}
+header,.card{backdrop-filter:blur(26px) saturate(180%);-webkit-backdrop-filter:blur(26px) saturate(180%)}
+header{background:var(--card);border:1px solid var(--line);border-radius:24px;margin:6px 0 14px;top:6px;box-shadow:inset 0 1px 0 var(--hi),0 10px 30px rgba(0,0,0,.2)}
+.card{position:relative;border-radius:26px;box-shadow:inset 0 1px 0 var(--hi),inset 0 -1px 0 rgba(255,255,255,.06),0 12px 36px rgba(0,0,0,.22);animation:spring-in .7s var(--spring) both}
+.card::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.22),transparent 38%,transparent 70%,rgba(255,255,255,.08))}
+#bolt{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+@keyframes spring-in{from{opacity:0;transform:translateY(28px) scale(.94)}to{opacity:1;transform:none}}
+h2{text-transform:none;letter-spacing:0;font-size:13.5px}
+button{border-radius:16px;box-shadow:0 8px 22px var(--glow),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.15);transition:transform .45s var(--spring),opacity .2s,box-shadow .3s}
+button:active:not(:disabled){transform:scale(.92)}
+button.ghost{background:var(--card2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);color:var(--text);box-shadow:inset 0 1px 0 var(--hi)}
+input{border-radius:16px;background:var(--card2);transition:border-color .2s,box-shadow .35s var(--ease),transform .4s var(--spring)}
+input:focus{transform:scale(1.015)}
+.chip{border-radius:999px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:transform .45s var(--spring),background .25s,box-shadow .25s}
+.chip:active{transform:scale(.93)}
+.chip[aria-pressed="true"]{transform:scale(1.04);box-shadow:0 6px 18px var(--glow),inset 0 1px 0 rgba(255,255,255,.5)}
+.otp span{border-radius:16px;box-shadow:0 0 22px rgba(75,224,173,.3),inset 0 1px 0 var(--hi);animation:pop .65s var(--spring) both}
+@keyframes pop{from{opacity:0;transform:scale(.3) translateY(14px)}to{opacity:1;transform:none}}
+.hist li{transition:transform .35s var(--spring)}.hist li:active{transform:scale(.97);opacity:1}
+.av{border-radius:14px}
+#toast{background:var(--card2);color:var(--text);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border:1px solid var(--line);
+  box-shadow:inset 0 1px 0 var(--hi),0 10px 30px rgba(0,0,0,.3);transform:translate(-50%,24px) scale(.9);transition:opacity .25s,transform .5s var(--spring)}
+#toast.show{transform:translate(-50%,0) scale(1)}
+/* 2FA আলাদা স্ক্রিন */
+.sheet{position:fixed;inset:0;z-index:20;overflow-y:auto;overscroll-behavior:contain;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  background:radial-gradient(circle at 15% 0%,rgba(61,123,255,.4),transparent 55%),radial-gradient(circle at 95% 35%,rgba(124,92,255,.32),transparent 55%),var(--bg);
+  transform:translateY(100%) scale(.96);opacity:0;visibility:hidden;transition:transform .6s var(--spring),opacity .3s,visibility 0s .6s}
+#setup{z-index:30}
+.tgbtn{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;padding:13px 14px;border-radius:16px;font-weight:600;color:#fff;text-decoration:none;
+  background:linear-gradient(135deg,#2aabee,#1b8fc9);box-shadow:0 8px 22px rgba(34,158,217,.4),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .45s var(--spring)}
+.tgbtn:active{transform:scale(.93)}
+.tgbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tgbtn[hidden]{display:none}
+.tgbtn.alt{background:var(--card2);color:var(--text);border:1px solid var(--line);box-shadow:inset 0 1px 0 var(--hi)}
+input:disabled{opacity:.7}
+.sheet.open{transform:none;opacity:1;visibility:visible;transition-delay:0s}
+.sheetin{max-width:520px;margin:0 auto;padding:6px 14px 44px}
+.sheet .card{animation:none}
+.sheet.open .card{animation:spring-in .7s var(--spring) both}.sheet.open .card:nth-of-type(2){animation-delay:.08s}
+.tl{display:flex;justify-content:space-between;align-items:center}
+.titem{padding:12px 0;border-top:1px solid var(--line)}.titem:first-child{border-top:none}
+.tcode{font-size:31px;font-weight:700;letter-spacing:.14em;font-variant-numeric:tabular-nums;color:var(--accent);cursor:pointer;margin:2px 0 8px}
+.ttrack{height:4px;background:var(--card2);border-radius:4px;overflow:hidden}
+.ttrack i{display:block;height:100%;border-radius:4px;transition:width 1s linear}
+@media (prefers-reduced-motion:reduce){.sheet{transition:none}.card,.otp span{animation:none!important}}
 </style>
 </head>
 <body>
 <div class="aurora"><i></i><i></i><i></i></div>
+<canvas id="bolt" aria-hidden="true"></canvas>
 <div class="wrap">
   <div class="grab"></div>
   <header>
     <div class="brand">
       <div class="logo"><img id="logo" src="https://i.postimg.cc/qgCPCKB3/IMG-20261029-221418-464.jpg" alt="লোগো"
         onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='logo.png'}else{this.parentNode.style.display='none'}"></div>
-      <div><h1>OTP নাম্বার</h1><div class="sub">নাম্বার নিন · OTP পান</div></div>
+      <div><h1>PS NUMBER</h1><div class="sub">নাম্বার নিন · OTP পান</div></div>
     </div>
     <div class="hbtns">
       <button class="ghost icon" id="btnMin" hidden aria-label="ছোট করুন">—</button>
+      <button class="ghost icon" id="btn2fa" aria-label="২-ফ্যাক্টর কোড">2FA</button>
       <button class="ghost icon" id="btnSettings" aria-expanded="false" aria-label="সেটিংস">⚙</button>
       <button class="ghost icon" id="btnClose" aria-label="বন্ধ করুন">✕</button>
     </div>
   </header>
 
   <section class="card" id="settings" hidden>
-    <label for="base">সার্ভারের ঠিকানা (Base URL)</label>
-    <input id="base" autocapitalize="off" autocorrect="off" spellcheck="false">
     <label for="key">API Key</label>
     <input id="key" placeholder="ps_..." autocapitalize="off" autocorrect="off" spellcheck="false">
     <button id="btnSave" style="margin-top:14px">সেভ করুন</button>
-    <p class="meta" style="margin:10px 0 0">তথ্য শুধু এই ফোনে জমা থাকে। শুধু আপনার সার্ভারে রিকোয়েস্ট যায়।</p>
+    <p class="meta" id="keyNote" style="margin:10px 0 0">শুধু API Key দিলেই সংযোগ হয়ে যাবে। Key এই ফোনেই জমা থাকে।</p>
   </section>
+
 
   <section class="card">
     <h2>রেঞ্জ বাছুন</h2>
@@ -176,16 +229,80 @@ label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
     <ul class="hist" id="hist"></ul>
   </section>
 </div>
+<div class="sheet" id="setup" aria-hidden="true">
+  <div class="sheetin">
+    <header>
+      <div class="brand">
+        <div class="logo"><img src="https://i.postimg.cc/qgCPCKB3/IMG-20261029-221418-464.jpg" alt="লোগো" onerror="this.parentNode.style.display='none'"></div>
+        <div><h1>PS NUMBER</h1><div class="sub">লগইন</div></div>
+      </div>
+    </header>
+    <section class="card">
+      <h2>API Key দিয়ে লগইন করুন</h2>
+      <input id="setupKey" aria-label="API Key" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <p class="meta" style="margin:8px 2px 0">এখানে API Key দিন</p>
+      <button id="setupSave" style="margin-top:14px">সেভ করুন</button>
+      <p class="meta" style="margin:10px 2px 0">একবার সেভ করলে Key আর বদলানো যাবে না, তাই সঠিক Key দিন। অ্যাপ আনইনস্টল না করা পর্যন্ত এটা থাকবে।</p>
+    </section>
+    <section class="card">
+      <p class="meta" style="margin:0 2px">API Key নেই? আমাদের Telegram বট থেকে নিন।</p>
+      <a class="tgbtn" id="lnkBot" href="https://t.me/ps_otp1_bot?start=6343655743" target="_blank" rel="noopener">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+        <span>Get API Key</span>
+      </a>
+      <a class="tgbtn alt" id="lnkChannel" href="#" target="_blank" rel="noopener" hidden>
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+        <span>GET API KEY 💥</span>
+      </a>
+    </section>
+  </div>
+</div>
+<div class="sheet" id="twofa" aria-hidden="true">
+  <div class="sheetin">
+    <header>
+      <button class="ghost icon" id="t2Back" aria-label="পেছনে যান">←</button>
+      <h1>2FA</h1>
+      <span style="width:38px"></span>
+    </header>
+    <section class="card">
+      <input id="tSecret" aria-label="2FA key" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <p class="meta" style="margin:8px 2px 0">এখানে 2FA key দিন</p>
+      <button id="tAdd" style="margin-top:14px">যোগ করুন</button>
+    </section>
+    <section class="card">
+      <div id="tlist"></div>
+      <p class="meta" style="margin:8px 0 0">কোডে ট্যাপ করলে কপি হবে। key এই ফোনেই জমা থাকে।</p>
+    </section>
+  </div>
+</div>
 <div id="toast" role="status"></div>
 
 <script>
+/* ===== লিংক সেটিংস: লিংক বদলাতে হলে শুধু এখানে বদলান ===== */
+const LINKS = {
+  bot: 'https://t.me/ps_otp1_bot?start=6343655743',   // "Get API Key" বাটন
+  channel: ''                                          // টেলিগ্রাম চ্যানেলের লিংক এখানে বসান (ফাঁকা থাকলে বাটন লুকানো থাকবে)
+};
 const $ = id => document.getElementById(id);
 const store = {
   get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 };
 
-let cfg = store.get('cfg', { base: 'https://min-bot-emf8.onrender.com/api/v1', key: '' });
+const BASE = atob('aHR0cHM6Ly9taW4tYm90LWVtZjgub25yZW5kZXIuY29tL2FwaS92MQ==');
+function loadKey(){
+  let k = '';
+  try { if (window.Android && window.Android.getKey) k = window.Android.getKey() || ''; } catch(e){}
+  return k || (store.get('cfg', {}) || {}).key || '';
+}
+function saveKey(k){
+  if (loadKey()) return false;
+  store.set('cfg', { key: k });
+  try { if (window.Android && window.Android.saveKey) window.Android.saveKey(k); } catch(e){}
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
+  return true;
+}
+let cfg = { key: loadKey() };
 let ranges = store.get('ranges', ['26134']);
 let activeRid = store.get('activeRid', ranges[0] || '');
 let history = store.get('history', []);
@@ -279,10 +396,10 @@ function cleanBase(v){
 }
 
 async function api(path, opts){
-  const base = cleanBase(cfg.base);
-  if (!base) return { fail: 'সেটিংসে সার্ভারের ঠিকানা দিন' };
-  if (!cfg.key) return { fail: 'সেটিংসে API Key দিন' };
-  const headers = Object.assign({ mauthapi: cfg.key }, (opts && opts.headers) || {});
+  const base = BASE;
+  const key = loadKey();
+  if (!key) return { fail: 'আগে API Key দিন' };
+  const headers = Object.assign({ mauthapi: key }, (opts && opts.headers) || {});
   try {
     const res = await fetch(base + path, Object.assign({}, opts, { headers }));
     const text = await res.text();
@@ -299,13 +416,44 @@ $('btnSettings').onclick = () => {
   $('btnSettings').setAttribute('aria-expanded', String(!s.hidden));
 };
 $('btnSave').onclick = () => {
-  cfg = { base: $('base').value.trim(), key: $('key').value.trim() };
-  store.set('cfg', cfg);
+  if (loadKey()){ toast('Key লক করা আছে'); return; }
+  const k = $('key').value.trim();
+  if (!k){ toast('API Key খালি রাখা যাবে না'); return; }
+  if (!saveKey(k)){ toast('Key লক করা আছে'); return; }
+  cfg.key = k; applyLock();
   $('settings').hidden = true;
   toast('সেভ হয়েছে');
 };
-$('base').value = cfg.base; $('key').value = cfg.key;
-if (!cfg.key) $('settings').hidden = false;
+function applyLock(){
+  const k = loadKey(), on = !!k;
+  $('key').disabled = on; $('btnSave').hidden = on;
+  $('btnSettings').hidden = on; if (on) $('settings').hidden = true;
+  $('key').value = on ? (k.length > 8 ? k.slice(0, 3) + '••••••' + k.slice(-2) : '••••••') : '';
+  $('keyNote').textContent = on ? 'API Key সেভ করা আছে এবং লক করা। এটা আর বদলানো যায় না।' : 'শুধু API Key দিলেই সংযোগ হয়ে যাবে। একবার সেভ করলে আর বদলানো যাবে না।';
+}
+applyLock();
+(function(){
+  $('lnkBot').href = LINKS.bot;
+  const c = $('lnkChannel');
+  if (LINKS.channel){ c.href = LINKS.channel; c.hidden = false; }
+})();
+function setSetup(on){ const s = $('setup'); s.classList.toggle('open', on); s.setAttribute('aria-hidden', String(!on)); }
+let armed = 0, armT = 0;
+$('setupSave').onclick = () => {
+  const k = $('setupKey').value.trim();
+  if (k.length < 4){ toast('সঠিক API Key দিন'); return; }
+  if (!armed){
+    armed = 1; $('setupSave').textContent = 'নিশ্চিত করুন: এরপর আর বদলানো যাবে না';
+    clearTimeout(armT); armT = setTimeout(() => { armed = 0; $('setupSave').textContent = 'সেভ করুন'; }, 5000);
+    return;
+  }
+  armed = 0; clearTimeout(armT); $('setupSave').textContent = 'সেভ করুন';
+  if (!saveKey(k)){ toast('Key আগেই সেভ করা আছে'); setSetup(false); return; }
+  cfg.key = k; $('setupKey').value = ''; applyLock();
+  setSetup(false); toast('সেভ হয়েছে');
+};
+$('setupKey').onkeydown = e => { if (e.key === 'Enter') $('setupSave').click(); };
+if (!loadKey()) setSetup(true);
 
 /* ---------- ranges ---------- */
 function renderRanges(){
@@ -543,6 +691,138 @@ if (window.Android){
     if (!isIn(document.activeElement) && window.Android.setFocusable) window.Android.setFocusable(false);
   }, 250));
 }
+/* ---------- বজ্রপাত (কাচের নিচের স্তরে) ---------- */
+(function(){
+  const cv = $('bolt'), cx = cv.getContext('2d');
+  if (!cx || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  let W = 0, H = 0, D = 1, raf = 0;
+  function size(){ D = Math.min(window.devicePixelRatio || 1, 2); W = cv.width = innerWidth * D; H = cv.height = innerHeight * D; }
+  size(); addEventListener('resize', size);
+  function path(x, y, steps, stepY, drift, w, out, d){
+    for (let i = 0; i < steps; i++){
+      const nx = x + (Math.random() - .5) * drift, ny = y + stepY * (.6 + Math.random() * .8);
+      out.push([x, y, nx, ny, w]);
+      if (d < 2 && Math.random() < .22) path(nx, ny, 3 + (Math.random() * 3 | 0), stepY * .8, drift * 1.3, w * .55, out, d + 1);
+      x = nx; y = ny;
+    }
+  }
+  function strike(){
+    if (document.hidden) return;
+    const light = matchMedia('(prefers-color-scheme:light)').matches && document.documentElement.dataset.theme !== 'dark';
+    const core = light ? '106,69,255' : '255,255,255', glow = light ? '36,87,255' : '120,165,255';
+    const stepY = H / 20, segs = [];
+    path(W * (.12 + Math.random() * .76), -10, Math.round(H * (.5 + Math.random() * .45) / stepY), stepY, 70 * D, 3 * D, segs, 0);
+    const t0 = performance.now(), dur = 750;
+    cancelAnimationFrame(raf);
+    (function frame(now){
+      const t = (now - t0) / dur; cx.clearRect(0, 0, W, H);
+      if (t >= 1) return;
+      const f = t < .12 ? 1 : t < .2 ? .2 : t < .3 ? .9 : Math.max(0, 1 - (t - .3) / .7) * .6;
+      cx.fillStyle = 'rgba(' + glow + ',' + (f * .14) + ')'; cx.fillRect(0, 0, W, H);
+      cx.lineCap = 'round'; cx.lineJoin = 'round';
+      cx.shadowColor = 'rgb(' + glow + ')'; cx.shadowBlur = 22 * D;
+      segs.forEach(s => {
+        cx.beginPath(); cx.moveTo(s[0], s[1]); cx.lineTo(s[2], s[3]);
+        cx.strokeStyle = 'rgba(' + glow + ',' + (f * .6) + ')'; cx.lineWidth = s[4] * 3; cx.stroke();
+        cx.strokeStyle = 'rgba(' + core + ',' + f + ')'; cx.lineWidth = s[4] * .8; cx.stroke();
+      });
+      cx.shadowBlur = 0;
+      raf = requestAnimationFrame(frame);
+    })(t0);
+    if (Math.random() < .3) setTimeout(strike, 260);
+  }
+  (function next(){ setTimeout(() => { strike(); next(); }, 3500 + Math.random() * 5000); })();
+  setTimeout(strike, 1200);
+})();
+
+/* ---------- 2FA (TOTP, RFC 6238) ---------- */
+function sha1(m){
+  const l = m.length, n = ((l + 8 >> 6) + 1) * 16, w = new Array(n).fill(0);
+  for (let i = 0; i < l; i++) w[i >> 2] |= m[i] << (24 - (i % 4) * 8);
+  w[l >> 2] |= 0x80 << (24 - (l % 4) * 8); w[n - 1] = l * 8;
+  let h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE, h3 = 0x10325476, h4 = 0xC3D2E1F0;
+  const rol = (x, s) => (x << s) | (x >>> (32 - s));
+  for (let i = 0; i < n; i += 16){
+    const x = w.slice(i, i + 16);
+    for (let t = 16; t < 80; t++) x[t] = rol(x[t-3] ^ x[t-8] ^ x[t-14] ^ x[t-16], 1);
+    let a = h0, b = h1, c = h2, d = h3, e = h4;
+    for (let t = 0; t < 80; t++){
+      const f = t < 20 ? (b & c) | (~b & d) : t < 40 ? b ^ c ^ d : t < 60 ? (b & c) | (b & d) | (c & d) : b ^ c ^ d;
+      const k = t < 20 ? 0x5A827999 : t < 40 ? 0x6ED9EBA1 : t < 60 ? 0x8F1BBCDC : 0xCA62C1D6;
+      const tmp = (rol(a, 5) + f + e + k + x[t]) | 0; e = d; d = c; c = rol(b, 30); b = a; a = tmp;
+    }
+    h0 = (h0 + a) | 0; h1 = (h1 + b) | 0; h2 = (h2 + c) | 0; h3 = (h3 + d) | 0; h4 = (h4 + e) | 0;
+  }
+  const o = new Uint8Array(20);
+  [h0, h1, h2, h3, h4].forEach((h, i) => { for (let j = 0; j < 4; j++) o[i * 4 + j] = (h >>> (24 - j * 8)) & 255; });
+  return o;
+}
+function hmac1(key, msg){
+  if (key.length > 64) key = sha1(key);
+  const k = new Uint8Array(64); k.set(key);
+  const ip = new Uint8Array(64 + msg.length), op = new Uint8Array(84);
+  for (let i = 0; i < 64; i++){ ip[i] = k[i] ^ 0x36; op[i] = k[i] ^ 0x5c; }
+  ip.set(msg, 64); op.set(sha1(ip), 64);
+  return sha1(op);
+}
+function b32(s){
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; let bits = '', out = [];
+  for (const c of String(s).replace(/[\s=-]/g, '').toUpperCase()){
+    const v = A.indexOf(c); if (v < 0) return null;
+    bits += v.toString(2).padStart(5, '0');
+  }
+  for (let i = 0; i + 8 <= bits.length; i += 8) out.push(parseInt(bits.slice(i, i + 8), 2));
+  return new Uint8Array(out);
+}
+function totp(secret, t){
+  const key = b32(secret); if (!key || !key.length) return null;
+  let v = Math.floor((t == null ? Date.now() : t) / 30000); const m = new Uint8Array(8);
+  for (let i = 7; i >= 0; i--){ m[i] = v & 255; v = Math.floor(v / 256); }
+  const h = hmac1(key, m), o = h[19] & 15;
+  const n = (((h[o] & 127) << 24) | (h[o+1] << 16) | (h[o+2] << 8) | h[o+3]) % 1000000;
+  return String(n).padStart(6, '0');
+}
+let accts = store.get('totp', []), tEls = [];
+function render2fa(){
+  const box = $('tlist'); box.innerHTML = ''; tEls = [];
+  if (!accts.length){ box.innerHTML = '<p class="empty">এখনো কোনো অ্যাকাউন্ট নেই।</p>'; return; }
+  accts.forEach((a, i) => {
+    const d = document.createElement('div'); d.className = 'titem';
+    d.innerHTML = '<div class="tl"><b>' + esc(a.name) + '</b><button class="ghost icon" aria-label="মুছুন">×</button></div><div class="tcode" role="button" tabindex="0">------</div><div class="ttrack"><i></i></div>';
+    const e = { a, code: d.querySelector('.tcode'), bar: d.querySelector('.ttrack i'), cur: '' };
+    e.code.onclick = () => e.cur && copy(e.cur);
+    e.code.onkeydown = ev => { if (ev.key === 'Enter') e.code.click(); };
+    d.querySelector('button').onclick = () => {
+      if (!confirm(a.name + ' মুছে ফেলবেন?')) return;
+      accts.splice(i, 1); store.set('totp', accts); render2fa(); tick2fa();
+    };
+    box.appendChild(d); tEls.push(e);
+  });
+}
+function tick2fa(){
+  const t = Date.now(), left = 30 - ((t / 1000) % 30);
+  tEls.forEach(e => {
+    const c = totp(e.a.secret, t); e.cur = c || '';
+    e.code.textContent = c ? c.slice(0, 3) + ' ' + c.slice(3) : '------';
+    e.bar.style.width = (left / 30 * 100) + '%';
+    e.bar.style.background = left < 6 ? 'var(--err)' : 'var(--accent)';
+  });
+}
+setInterval(() => { if ($('twofa').classList.contains('open')) tick2fa(); }, 1000);
+$('btn2fa').onclick = () => { $('twofa').classList.add('open'); $('twofa').setAttribute('aria-hidden', 'false'); render2fa(); tick2fa(); };
+$('t2Back').onclick = () => { $('twofa').classList.remove('open'); $('twofa').setAttribute('aria-hidden', 'true'); };
+$('tAdd').onclick = () => {
+  let name = '', s = $('tSecret').value.trim();
+  if (/^otpauth:/i.test(s)){
+    try { const u = new URL(s); s = u.searchParams.get('secret') || ''; if (!name) name = decodeURIComponent(u.pathname.replace(/^\/+/, '')); } catch(e){}
+  }
+  s = s.replace(/[\s-]/g, '').toUpperCase();
+  if (!totp(s)){ toast('সিক্রেট কী সঠিক নয়'); return; }
+  if (!name) name = 'অ্যাকাউন্ট ' + (accts.length + 1);
+  accts.push({ name, secret: s }); store.set('totp', accts);
+  $('tSecret').value = ''; render2fa(); tick2fa(); toast('যোগ হয়েছে');
+};
+
 syncOpt(); renderRanges(); renderHistory();
 </script>
 </body>
