@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="bn" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1a2b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>PS NUMBER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050a1a; --bg2:#0a1330; --card2:rgba(255,255,255,.07); --line:rgba(110,160,255,.26);
+  --text:#eef3ff; --muted:#93a6cc;
+  --accent:#2f8cff; --accent2:#22c4ff; --accent3:#3ee0ff; --orange:#ff8a1f; --gold:#ffc13a; --on-accent:#fff;
+  --ok:#4be0ad; --warn:#ffc15e; --err:#ff7f8c; --glow:rgba(47,140,255,.4);
+  --spring:cubic-bezier(.34,1.4,.64,1);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{margin:0;color:var(--text);background:linear-gradient(180deg,var(--bg2),var(--bg));background-attachment:fixed;
+  font-family:"Hind Siliguri",-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.4;overflow-x:hidden;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.aurora{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
+  background:radial-gradient(420px 260px at 0% 0%,rgba(47,140,255,.28),transparent 70%),radial-gradient(380px 260px at 100% 100%,rgba(255,138,31,.18),transparent 70%)}
+.aurora i{display:none}
+.wm{position:absolute;right:-60px;bottom:-50px;width:240px;height:240px;border-radius:50%;opacity:.07;object-fit:cover}
+#bolt{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:4px 10px 28px}
+.grab{width:36px;height:4px;border-radius:4px;background:var(--line);margin:4px auto 6px}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:6px 2px 9px;margin:0 0 8px;background:linear-gradient(180deg,var(--bg) 72%,transparent)}
+header::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),var(--orange),transparent);opacity:.75}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.logo{width:38px;height:38px;border-radius:50%;flex:none;padding:2px;
+  background:conic-gradient(from 200deg,var(--accent),var(--accent3),var(--orange),var(--gold),var(--accent));
+  box-shadow:0 0 14px var(--glow);animation:glow 3s ease-in-out infinite alternate}
+@keyframes glow{to{box-shadow:0 0 20px rgba(255,138,31,.55)}}
+.logo img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;background:#0b1531;border:1.5px solid var(--bg)}
+h1{font-size:15.5px;margin:0;font-weight:700;line-height:1.1;letter-spacing:.02em;
+  background:linear-gradient(90deg,#5bb0ff,#ffb53a);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sub{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-top:2px}
+.sub::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok)}
+.hbtns{display:flex;gap:6px}
+.hbtns .icon{min-width:34px;height:34px;padding:0 10px;font-size:14px;border-radius:11px}
+button{position:relative;overflow:hidden;font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:none;border-radius:12px;padding:10px 12px;
+  color:var(--on-accent);background:linear-gradient(135deg,var(--accent),var(--accent2));width:100%;box-shadow:0 4px 14px var(--glow);
+  transition:transform .2s var(--spring),opacity .15s}
+button:active:not(:disabled){transform:scale(.95)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,.chip:focus-visible,.tgbtn:focus-visible{outline:2px solid var(--accent3);outline-offset:2px}
+button.ghost{background:var(--card2);color:var(--text);border:1px solid var(--line);box-shadow:none}
+button.icon{width:auto;padding:6px 10px;font-size:13px}
+#btnGet{background:linear-gradient(135deg,var(--orange),var(--gold));color:#201000;box-shadow:0 4px 16px rgba(255,138,31,.38)}
+input{font:inherit;font-size:14px;width:100%;background:rgba(0,0,0,.35);border:1px solid var(--line);color:var(--text);padding:9px 11px;border-radius:12px;
+  transition:border-color .2s,box-shadow .2s}
+input:focus{border-color:var(--accent3);box-shadow:0 0 0 3px rgba(62,224,255,.18);outline:none}
+input:disabled{opacity:.7}
+label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px}
+.card{position:relative;background:linear-gradient(180deg,#0d1938,#0a1330);border:1px solid var(--line);border-radius:16px;padding:11px;margin-bottom:9px;
+  box-shadow:0 6px 18px rgba(0,0,0,.4);animation:rise .3s ease both}
+.card::before{content:"";position:absolute;left:14px;right:14px;top:-1px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--accent),var(--orange),transparent)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{font-size:12.5px;margin:0 0 8px;font-weight:600;color:var(--muted);letter-spacing:.02em}
+.chips{display:flex;gap:6px;margin:0 -11px 9px;padding:2px 11px 4px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips .empty{white-space:nowrap}
+.chip{flex:none;display:inline-flex;align-items:center;gap:4px;background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:999px;
+  padding:5px 6px 5px 12px;font-weight:600;font-size:13px;cursor:pointer;transition:transform .2s var(--spring),background .2s}
+.chip:active{transform:scale(.94)}
+.chip[aria-pressed="true"]{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff;box-shadow:0 3px 12px var(--glow)}
+.chip .x{background:none;border:none;box-shadow:none;color:inherit;opacity:.7;width:auto;padding:0 4px;font-size:15px;line-height:1}
+.addrow{display:flex;gap:6px;margin-bottom:9px}
+.addrow input{flex:1}.addrow button{width:auto;white-space:nowrap}
+.opt{display:flex;align-items:center;gap:9px;margin:0 0 9px;padding:8px 10px;background:var(--card2);border:1px solid var(--line);border-radius:12px;cursor:pointer;
+  color:var(--text);font-size:13px;font-weight:500;user-select:none}
+.opt input{width:18px;height:18px;flex:none;margin:0;padding:0;accent-color:var(--orange);cursor:pointer}
+.opt small{display:block;color:var(--muted);font-size:11px;font-weight:400}
+/* নাম্বার কার্ড */
+#jobs{display:flex;flex-direction:column;gap:7px;margin-bottom:9px}
+#jobs .job{margin:0;padding:9px 11px;border-radius:15px;border-color:rgba(47,140,255,.5)}
+#jobs .job.done{border-color:rgba(255,193,58,.65);background:linear-gradient(180deg,#1b1a2b,#0c1330)}
+.row{display:flex;gap:6px;align-items:center;justify-content:space-between}
+.meta{color:var(--muted);font-size:12px}
+.job .meta{display:flex;align-items:center;gap:6px;min-width:0}
+.sn{display:inline-grid;place-items:center;min-width:21px;height:19px;padding:0 6px;border-radius:999px;font-size:10.5px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--orange));flex:none}
+.timer{font-variant-numeric:tabular-nums;color:var(--muted);font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:5px}
+.job.waiting .timer::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--err);animation:blink 1.1s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25;transform:scale(.7)}}
+.job.done .timer{color:var(--gold)}
+.number{font-size:19px;font-weight:700;letter-spacing:.02em;margin:2px 0;word-break:break-all;font-variant-numeric:tabular-nums;
+  background:linear-gradient(90deg,#fff,var(--accent3));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.job button.icon{padding:5px 10px;font-size:12px;border-radius:10px}
+.track{height:3px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:7px}
+.track i{display:block;height:100%;width:0;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent3),var(--orange));transition:width .5s linear}
+.otp{display:flex;gap:5px;margin:7px 0 5px;justify-content:center;cursor:pointer}
+.otp span{flex:1;max-width:38px;text-align:center;font-size:20px;font-weight:700;padding:5px 0;background:rgba(255,193,58,.1);border:1.5px solid var(--gold);color:var(--gold);
+  border-radius:10px;box-shadow:0 0 12px rgba(255,193,58,.3);animation:pop .4s var(--spring) both}
+.otp span:nth-child(2){animation-delay:.05s}.otp span:nth-child(3){animation-delay:.1s}.otp span:nth-child(4){animation-delay:.15s}
+.otp span:nth-child(5){animation-delay:.2s}.otp span:nth-child(6){animation-delay:.25s}
+@keyframes pop{from{opacity:0;transform:scale(.4) translateY(8px)}to{opacity:1;transform:none}}
+.status{display:flex;align-items:center;gap:8px;margin:7px 0 2px;font-size:12.5px;color:var(--muted)}
+.status.ok{color:var(--ok)} .status.err{color:var(--err)} .status.warn{color:var(--warn)}
+.spin{width:14px;height:14px;border:2.5px solid rgba(255,255,255,.15);border-top-color:var(--accent3);border-radius:50%;animation:s .9s linear infinite;flex:none}
+@keyframes s{to{transform:rotate(360deg)}}
+.btns{display:flex;gap:6px;margin-top:7px}
+.job .btns button{padding:8px 6px;font-size:12.5px;border-radius:11px;flex:1;width:auto}
+.job .mini{display:none}
+#jobs .job.mini{padding:5px 9px;border-radius:14px}
+.job.mini::before{display:none}
+.job.mini > *:not(.mini){display:none}
+.job.mini > .mini{display:flex;align-items:center;gap:7px;cursor:pointer}
+.mini .mn{flex:1;min-width:0;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .mo{font-size:14.5px;font-weight:700;letter-spacing:.08em;color:var(--gold);font-variant-numeric:tabular-nums}
+.mini button{width:auto;padding:4px 10px;font-size:11.5px;border-radius:10px}
+/* আগের নাম্বার */
+.hist{list-style:none;margin:0;padding:0}
+.hist li{padding:7px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center;cursor:pointer;transition:transform .2s var(--spring)}
+.hist li:active{transform:scale(.97)}.hist li:first-child{border-top:none}
+.hl{display:flex;align-items:center;gap:9px;min-width:0}
+.av{width:30px;height:30px;border-radius:10px;flex:none;display:grid;place-items:center;font-weight:700;font-size:13px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--orange))}
+.hist b{font-size:13.5px}
+.hist .otpv{color:var(--gold);font-weight:700;font-size:15px;letter-spacing:.08em}
+.empty{color:var(--muted);font-size:13px;margin:0}
+#toast{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translate(-50%,14px) scale(.92);z-index:99;background:#101d44;border:1px solid var(--accent);
+  color:var(--text);padding:7px 14px;border-radius:999px;font-size:12.5px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .35s var(--spring);
+  box-shadow:0 6px 20px rgba(0,0,0,.5),0 0 14px var(--glow);max-width:92%;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+/* আলাদা স্ক্রিন (লগইন, 2FA) */
+.sheet{position:fixed;inset:0;z-index:20;overflow-y:auto;overscroll-behavior:contain;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  background:radial-gradient(420px 260px at 0% 0%,rgba(47,140,255,.28),transparent 70%),radial-gradient(380px 260px at 100% 100%,rgba(255,138,31,.16),transparent 70%),var(--bg);
+  transform:translateY(100%);opacity:0;visibility:hidden;transition:transform .4s var(--spring),opacity .25s,visibility 0s .4s}
+#setup{z-index:30}
+.sheet.open{transform:none;opacity:1;visibility:visible;transition-delay:0s}
+.sheetin{max-width:520px;margin:0 auto;padding:4px 10px 28px}
+.sheet .card{animation:none}
+.sheet.open .card{animation:rise .35s ease both}.sheet.open .card:nth-of-type(2){animation-delay:.06s}
+.tgbtn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:10px 12px;border-radius:12px;font-weight:600;font-size:14px;color:#fff;text-decoration:none;
+  background:linear-gradient(135deg,#2aabee,#1b8fc9);box-shadow:0 4px 16px rgba(34,158,217,.4);transition:transform .2s var(--spring)}
+.tgbtn:active{transform:scale(.95)}
+.tgbtn[hidden]{display:none}
+.tgbtn.alt{background:var(--card2);color:var(--text);border:1px solid var(--line);box-shadow:none}
+/* 2FA */
+.tl{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tl b{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.titem{padding:9px 0;border-top:1px solid var(--line)}.titem:first-child{border-top:none;padding-top:0}
+.titem.sel .tl b::after{content:"✓ কপি হয়েছে";color:var(--ok);font-size:11px;font-weight:600;margin-left:8px}
+.titem.sel .tcode{text-shadow:0 0 14px rgba(62,224,255,.6)}
+.tcode{font-size:27px;font-weight:700;letter-spacing:.12em;font-variant-numeric:tabular-nums;color:var(--accent3);cursor:pointer;margin:2px 0 6px}
+.ttrack{height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.ttrack i{display:block;height:100%;border-radius:3px;transition:width 1s linear}
+.tact{display:flex;gap:5px;align-items:center}
+.tact button{width:auto;padding:5px 11px;font-size:12px;border-radius:10px}
+#twofa .addrow{margin-bottom:0}
+@media (prefers-reduced-motion:reduce){.sheet{transition:none}.card,.otp span,.logo{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="aurora"><i></i><i></i><i></i><img class="wm" data-logo alt=""></div>
+<canvas id="bolt" aria-hidden="true"></canvas>
+<div class="wrap">
+  <div class="grab"></div>
+  <header>
+    <div class="brand">
+      <div class="logo"><img id="logo" data-logo alt="লোগো"></div>
+      <div><h1>PS NUMBER</h1><div class="sub">নাম্বার নিন · OTP পান</div></div>
+    </div>
+    <div class="hbtns">
+      <button class="ghost icon" id="btnMin" hidden aria-label="ছোট করুন">—</button>
+      <button class="ghost icon" id="btn2fa" aria-label="২-ফ্যাক্টর কোড">2FA</button>
+      <button class="ghost icon" id="btnSettings" aria-expanded="false" aria-label="সেটিংস">⚙</button>
+      <button class="ghost icon" id="btnClose" aria-label="বন্ধ করুন">✕</button>
+    </div>
+  </header>
+
+  <section class="card" id="settings" hidden>
+    <label for="key">API Key</label>
+    <input id="key" placeholder="ps_..." autocapitalize="off" autocorrect="off" spellcheck="false">
+    <button id="btnSave" style="margin-top:10px">সেভ করুন</button>
+    <p class="meta" id="keyNote" style="margin:10px 0 0">শুধু API Key দিলেই সংযোগ হয়ে যাবে। Key এই ফোনেই জমা থাকে।</p>
+  </section>
+
+
+  <section class="card">
+    <h2>রেঞ্জ বাছুন</h2>
+    <div class="chips" id="chips"></div>
+    <div class="addrow">
+      <input id="newRid" inputmode="numeric" placeholder="নতুন রেঞ্জ, যেমন 26134">
+      <button class="ghost" id="btnAdd">যোগ করুন</button>
+    </div>
+    <label class="opt" for="optCode">
+      <input type="checkbox" id="optCode">
+      <span>কান্ট্রি কোড সহ কপি<small id="optHint">টিক না দিলে কোড ছাড়া কপি হবে</small></span>
+    </label>
+    <button id="btnGet">নাম্বার নিন</button>
+  </section>
+
+  <div id="jobs"></div>
+
+  <section class="card">
+    <div class="row" style="margin-bottom:10px">
+      <h2 style="margin:0">আগের নাম্বার</h2>
+      <button class="ghost icon" id="btnClear">মুছুন</button>
+    </div>
+    <ul class="hist" id="hist"></ul>
+  </section>
+</div>
+<div class="sheet" id="setup" aria-hidden="true">
+  <div class="sheetin">
+    <header>
+      <div class="brand">
+        <div class="logo"><img data-logo alt="লোগো"></div>
+        <div><h1>PS NUMBER</h1><div class="sub">লগইন</div></div>
+      </div>
+      <div class="hbtns">
+        <button class="ghost icon" id="sMin" hidden aria-label="ছোট করুন">—</button>
+        <button class="ghost icon" id="sClose" hidden aria-label="বন্ধ করুন">✕</button>
+      </div>
+    </header>
+    <section class="card">
+      <h2>API Key দিয়ে লগইন করুন</h2>
+      <input id="setupKey" aria-label="API Key" autocapitalize="off" autocorrect="off" spellcheck="false">
+      <p class="meta" style="margin:8px 2px 0">এখানে API Key দিন</p>
+      <button id="setupSave" style="margin-top:10px">সেভ করুন</button>
+      <p class="meta" style="margin:10px 2px 0">একবার সেভ করলে Key আর বদলানো যাবে না, তাই সঠিক Key দিন। অ্যাপ আনইনস্টল না করা পর্যন্ত এটা থাকবে।</p>
+    </section>
+    <section class="card">
+      <p class="meta" style="margin:0 2px">API Key নেই? আমাদের Telegram বট থেকে নিন।</p>
+      <a class="tgbtn" id="lnkBot" href="https://t.me/ps_otp1_bot?start=6343655743" rel="noopener">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+        <span>GET API KEY 💥</span>
+      </a>
+      <a class="tgbtn alt" id="lnkChannel" href="#" rel="noopener" hidden>
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+        <span>GET API KEY 💥</span>
+      </a>
+    </section>
+  </div>
+</div>
+<div class="sheet" id="twofa" aria-hidden="true">
+  <div class="sheetin">
+    <header>
+      <button class="ghost icon" id="t2Back" aria-label="পেছনে যান">←</button>
+      <h1>2FA</h1>
+      <span style="width:38px"></span>
+    </header>
+    <section class="card">
+      <div class="addrow">
+        <input id="tSecret" aria-label="2FA key" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button class="ghost" id="tPaste" aria-label="ক্লিপবোর্ড থেকে পেস্ট">পেস্ট</button>
+      </div>
+      <p class="meta" style="margin:8px 2px 0">এখানে 2FA key দিন, অথবা কপি করা key পেস্ট বাটনে চেপে বসান</p>
+      <button id="tAdd" style="margin-top:10px">যোগ করুন</button>
+    </section>
+    <section class="card">
+      <div id="tlist"></div>
+      <p class="meta" style="margin:8px 0 0">"কপি" বাটনে বা কোডে ট্যাপ করলেই কপি হবে। key এই ফোনেই জমা থাকে।</p>
+    </section>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+/* ===== লিংক সেটিংস: লিংক বদলাতে হলে শুধু এখানে বদলান ===== */
+const LINKS = {
+  bot: 'https://t.me/ps_otp1_bot?start=6343655743',   // "Get API Key" বাটন
+  channel: ''                                          // টেলিগ্রাম চ্যানেলের লিংক এখানে বসান (ফাঁকা থাকলে বাটন লুকানো থাকবে)
+};
+const LOGO_SRC = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCACQAJADASIAAhEBAxEB/8QAHAAAAgMAAwEAAAAAAAAAAAAABgcDBAUBAggA/8QARRAAAQMCBAMFBAcECQMFAAAAAQIDBAURAAYSIQcxQRMiUWFxFDKBkQgVQlJiobEjJHLBFjM0U2OCssLRQ5Lhc6LS8PH/xAAaAQADAQEBAQAAAAAAAAAAAAAEBQYDBwIB/8QANBEAAQMCAwYDCAMAAwEAAAAAAQIDBAARBRIhEzFBUWFxgZHBBhQiobHR4fAjMvEzQnLC/9oADAMBAAIRAxEAPwDy02MTNthd97HpiFBsoHFtAB8icGtpvWKzaqy0lBIOOULscX220uGyveGIpkbs1pUBYHnjUsKAzDdXkOAnKasRj7u18aRiIlM6XB3uYPnihT4rrqh2SSfLDEytk2pVFrtQz2bA3Lrh0oHxO2HUKIp1F1j4eu6lc2UiP8SlWpbPUmS0ogp1AJvqHLFBLS3XUttpKlqNgBzJw/pWWssRae4KtWHXnNJGmnshdj/GspT+eFe5Go0D2tTL7zM5lxD8J1bqXNSU+82sIFgo3CkkG3dIPMHC7FIiYw/i18/tRWGS/e9V6CrfDDIDuac5MUieVRGxdx8qFlJQndVgeZ8BjpxNyG7ljOMmkQSqUjZbJQLqUhW6bgcjbmMOBviVlSVUI2YJyZjWZBBDAkNxlKSy4UWK9JslSgSbHwx0l8TsoxJNRr1MVIXmV2EWC84yUhxzSAFgC6UqJAJPliEMuaHrqbO61rcftVUGWSiwIt3G/wDf8rzO60tpxSFghQNiD0x0scMOk0zL1Scg+2PyZEhwqdmusPoQUlXuNoSsAKKQCVG+5UAOV8MYcIsr1aKg0KvKakKGzNQb7Ik+AULpPzwzkTkxgC6kgHjbShmoW2JyKFedsfXwy848Ka5l1RMmIst9HEi6SPEEYXkmK4wopWkgjG0eY0+LtqvWT0N1nVQ0qAY+OJI7C3nAhsd4+eOrqQhRSCDbqOWDMpy5uFCXF7V0x9bH2O4GPI1r7XdKTex2OJkquoA9PDE8tASpITztztiSDEU84AkEnDFthRXkTQynBlzGpGG+8FA7YJKRRHqw8hlhvWTuTyAHiT0GL0DJ7qIaZlQWIkPnqUO8v+EdfXljrX6wikxBCYSpiMoXLIV+0ePTWRuB5D0FtzihbYRDbLkndy5mk6n1SlZIxuefAfvKiiAnLuVY5cUWqjMQbFxZtHQR0HVwjy28cC+aOJM2oLLcZRWlOySsAJT/AAoGw/8Au+ASbPk1B0F5fdGyUDZKR0AHQYYPDnIL09tFaqcN1+nNalpjoHeklI5cwdN+ZHgRjFWIOSPhjiw5/blXkwI0O8iUrMrr6VFlTI+Ys7PNvSn5KI7m6AlBcccHilAIAT+JRSnzOHDkvgkKfNaedosKaEK1FU6evtR5pS0NAPkon1wQ8Gs90mtomU5uIYMphPbPqUAA+i9ri3IJ5aegt44Wee/pE1pFVfh5I7CFT2lFCZTjQcdft9qx2SD0Fr4UyV7MkW15nU0Ywh2Rq58I5CmtmDhvX3orU3KFUJSi6V0+Ws3uDYgLVexBuNKjbwOA6bRqeqSIOc6DES8rYGXG9lcV5odRa/wJwDZa+kHnmDLWuVNgS0OqC1pkxAATYDmixGwGHFl7j3Eq8UR8z5aUthwWUuEtMltXq2ux+V8fUTXQ3ldQFp+Y8a8vYS24QphRQscR686X2Z+ArEmOJmT5q16wVCDKUC56NuDZfobK9cJt6ZXcrzlxxIfZW2qymlkkbdCDj2pl5PDnMMlBoEtEOYFaxFZkORFg/wDokj8hhV/SayMgyJNdhxigdolDqkm4UrQDuOh/X54nn1ZXrp/4zwPD8VSxApbQbcP8g4jS9A2R+NUmGhMKsoS5FVspDg1tK/yn3fhb44I8yZRy7niCudlUoj1EpKjCKrhzxLZ6+nPHndxgpUQRjUoNdm0R9KmHV9lcEpCiCCOoPQ+eBJOAgnbxDkX8j3FbsYmpByPC4/fP69airlLfpT7jDiFIWk6V3H5YxFA3w83FReJNM20DMTaCUKAA9uSBcpI5B0Df8Q3HgFFVKY5FmqZKCFXsARbG0WQ4s7J4WWOH2r5KjIy7Zr+prLQgqOwJxZZYKwo9BjTjtJjxQSgBShZR5nFdagQVJVpTyItzw9THCLFVJS7m0FasajuTQC2sKWBsm2GrlDJ0ag0xup1pkOSFp1sxiOnRSvLwHXFXgxRoz0qRVJ41xISAstncLWfdT6dT6YLM71IuPMw2XCJ8oF550bmO3a5V6hPLw+OKmKhDXx21tcn96elRuJTHpD4gsnfvtyoFzrXFxmlVCYpLknUUxmPsoI21EeXQdCPLCflPuzJC3n1qW4s3JOC2TKpVTrUl6svOt06MgoYYY3W4RslIvyHUq/mccMZbQ5SDWKvJZpsJf9mjpF3Hv4U87fiPPCeWV4g7nBFuA5D0qjjBrD2wyRa3TeTwHOsXLlPNQq0SLvZ51KDboCd8esXY0SjQKBLjP9s7ImNR4iGzZptpAu5YczYWSSdtzYdT5mym81FrsWS0khDTqVgKO5seuGVnOotUGlPS6aZsiTMbUmMpabNRUrFlqBuQVWFr7YZxYqUMBZVpre3Hp+7xcUrxUl59LWW5IIHQnjy0H4rApmZwHc2LgtoZZTEkhLiRYjtVttAX8N7/AAwFZSytNzVVjHpzQNySSTZKE+JPhg5yBlF6ZkHMzSwGqlUGm/ZkunSSEKDiRvy1kW+WAamZjq+WI9QpbOuG48oIfugodTpv3b8089xgAOIL2eWLX1F/lTZSVhhSIZGYaa7utGmZOEVUo9LcmsusSkNJ1OJavqSOpsRuMLePNlU58mO6ttQO4B2PwwYZDz+/RKslc1112A5dMhq+rUk89j1wJPFudVSGgEpccskE25nbG0tth9ALJFyeGnmKww/31pS0TCFAahQFvC3Sj3KXEVTUhlquQ2JkYEA9ogLFvQ8vUb4f31i1PRIy82tx2hV2mOTIKHnC6uM+2LqQFEklHd2BJI9MKOk5fyC2puiTZjsiquWbVJaJ7JDh2sk8jY7X3vi7kZ2bHzmzTG30E0lD0VDjl9OtwhsA/wDGJvGsCWw3t2z306HUU8wbHm5jpYWkgpsQSLX13j9+tK+tU32ec6i1gFHGM5GK1aUpucOl3h9Vq1WZQbZ0sIdUlT6jpbFj944Ncu8LKFTSHKisz3xuUp7jY9TzP5YokQkMMpS6oZra21/fGkWJ44wl9RRuvpSFyTSqyKm2KXGlOqJCh2CTqQoG4ULciD18fjg1z1Sk1ymf0hbaS1NZcDNSZCbaXj7roHRKwDt0UCMP5cqHl6mSXmGWYsSI0p5SGUhIOkXANudzYb+OPOWSs1oezTJRWFFyDP1sTE+LbhuVeqVWWP4T44S4nEbCPeWxZSNe44j1or2fxlyW4ptQ+A6eNLqWQklBBt4YpOtuuI0toURhqZqgU3J1ckRZVBTUX2V21yn1dmrwUEItcEb7nDR4Rzo2Y4sxEnK1HgR2GtfbNRglI35K1X6X3v0xPzvaBbbG2Q3dPO4qkGFJSsgq3a+FLvhRUku5Tq0Rsj2ht1t8pHNSLEE/A2+eLeagumZcrlef/rqi6mFCv/dhIKiPjYfDCqyU/OjVhh2A4ttwKCbp6g8wfEHwwz/pCShFeotEQAhFPgoW4lPLtXBrV+oxUzcS2rLcJOilnX/yBc/MAVNYfhJjTHcQ0KSDbmFaD80tstslMrs4dOVUqi6k2QBcIHn4DxP6Y0ZWVcy5gqhC1RJc3SAI7MxlS0jolKAq/wABfG5SqG6803RI8n6vgtREz61P7MrtqTrCSE7qsClKUfaUT8NipZSodYhw4OW6rParNKadYbEmhmIJL6db3ZrdCjZ3SCE6vujlfHqWpew2LWlumg723+Jr1FUhTu1ctY+Z7cuwHK9LhpMzL0uRFmxEJkaS2Q+jvNG/MDorzwYZTnPynW2C62EKvq7Y9y1rm4PMbY5cjz86UuPPr7hiSYKlxZMt9BK5GkjSAOanBfSSfw3N8MrhBlNmvVySzIHY0eiLbStpgJBkyfespW5UECxO+5tawFsb4VPfjRyt9Op06Hr2rLE22JDuxYVf0/Ov+VNxXorWTMrUKXRXHJC3ippyI8+CUKCdSi3tcAb9zcDblvdWuZpoGYNMTNlOBdSNCXlXbeb8gscx5G48sOTjblTLMvLc6fDzFNh1qjIdeaYkPX1q+0mygCSbWBBPPrfHlyMmdVqlFZeUHw+6hoFQ+8oC/wAzjwJm0a2a7qN+I59d4+YrRMZDKs6bJ52/bUay+GEGooL2Vq8w4DuGJw0K+C03B+IGBio8Ps2U263KLLdbH/UjAPpPndF8Z7bNQp8p5MAyW1NrUnuL5WJHLqNsGGUeI9dpEpAk1ZKGwQFdrELhA8rEYVSf4xnQkimcfI4cqlfvnQlTqZXTPaRHp88ygoaUJjrKr32sLYb2WaDUY9XYZmqUJkaQmoVVxR3D25bYJH27kqUOmwO4IwU1/iDnZ+lMy6Kl/wCon2Elc5mIppWq3fSCSSnfkdtrYHKDnzT2UBcGLYq0IWEabKPU29438cNcDQ5iLRWtQtf+t9e5+3+Usxx16CLRkXUR/bgPvTKn5gERhD1QfVY7Ntp3W4fwp/nyx3jTpS9L0xPZOc0R0m4ZH4j9pfn05DrgZo0btg7WJLntMtLnZp1b9j5kePh0GLyZNyBfc4o1RUD4QN2/8ffj238teWWwUoN1HefQVl8Ya8YeSjFQqz1QeDdv8NFlK/PQMIGmNvJqcdxhClEqtYC98NPia19aZjajyJLMaFBaSyXHVhKdZ7y/Xc22B5YkolXoeWo5djUluRESLCbLu17SfBAPeKPzPgMIMaUYrBUlOZR3Dvz5aeddH9lIqdihK1W4k/PzplO5Nbzbl6jVKpLRGVGZ9mlPPbDSj3VeZ0kC3lgM4l57g0egqy5lIFqCNnnzst8+J8vLG3Q86S8/ZVzGyrQhyJHQ/HbbTpQkIVZQCfCyh8sIXMCFSGn1rdShxtVuzVzX42xCYJg65alpf/6a5e9Xs6cGGgoa3Nh04jvv05fOtrhmwmRmulQ0krR2yRy53V1xo/SJfLufqwo8jILY9E7f7cZ/At0L4hUbXyEhH+oYIOLdBlV/iJJgQwntnJbqlKWdKW0hSrrUTySOpODpU+2JZzoAm3hQjES8HKN+/wCYoco+YJKFJqsGO3UWnYiYdTpzhVZwJToudJ1WIAIUNwcWH89Odi8qiZSZp83s1tpmrlPvFkKSUqUNZ067FQ1G5F8YWe8uUvKU1MWmZgVU5wAKnIrehpN/x6rk+gxVpFAzDmSMXVuPfV7PvyJLhDSPievkMPY8r35GZkG58j52tU89HRCP8xAA58Ola2Ysxuwo9GjR7qYZjsPBR3Dira1KPiSsqN8MDgLndqDGqUWQ8pLzsoySRzVqtv8AlhV1b6viwmqf25nFknS9bSEXO6U/hvvhn8Iafk6bRXPrKkMTKgye0UsOuApSokBJAIF9r+hw52SysJUQQAPhG/l2pW+61Ejl2x377dd541uceM/ypORDRnXKZO9vcSkKbSoONJQQrUEm9uQFweuEdkqSqLVWX13CYuqRfSTYoFx+dsenFUfIEhgKnUWmRU+5qceU2PIAlQ+WK39D+FzhH7nS7qNhaoLF/L+swIuNsnc6Ae2noaHRjjD7OVQOvECgfhDWcoIcbZzhTITbil6vb5Gp3VzNignQn+Kx5jbrgAzfmCNVM4yqq3EYZZcccU2yEBCUN/YSANhYAfHD1r/B/KNQguM0ll+kzVCzTzUha0BXTUhZIIvztY4AeCvDao5mdkzp77dJpkV5UcuR2UqkSHEmyglawrSB97x2AwBic5iI0XJFwD4+VMcMeTKJVGNyOG61DXDjNGaKVU3BSIEybTXlkLY9nW40tB5hQAN9jbG9mPJsh2U3VaDCloU4vW5AcjraUwb37pV7yfjfyw83+F2TClDVRXU5K7X/AHmrvXUPG2oD5DGfJ4O8N1neApCj1FQUD+asTLHtBFivCRGCr9tD3qiLTjzRbf8A88aTjmbKjQKyku06RGhOd11p9sgOX53P6W5YOoi4r0cVqG6HKY2hTyr80FIvoV53t64AOIv9G6Hm2HlzICZj8hLwROLktT7B6FsJOxI5k9LWwLyZUtjMcjL9MllqNJeS0pCVnQm/O/iE7/LF/A9oGpyQVDKojdbh+7uNReKey4CQto2A0J6cfG1UJcqo1KpyJTDS3pLiysrSjWQSb7c7YxKvHqXal2eh8uHmp29/zwyIc1JoyZzNadomWxJcissQW1KmzVNhJUoq2SCQtO6lWF9km29xqsFNKaaqtXXXcrT5KYf7+wpE6nurRqQu6rgi250qKVC+w2wtxiYopzsC/P8AFP8ADGkk5XhlHC3DvV36NN11GayrdMiG+yoePcJ/24WedXEpqchvlpUbYcP0fIKoGbJcZY7zK3m1W8QhwHCdztEWK7LITsVn9cKcCeW7JfDYvcCn+JMBuMkK4W/+q+4Xzvq/NtOkE2CHkH88Hn0kUORM4VDsXFpbfd7QgGwUFWUL+I72FXl9p4Sw+kFDbRBU5bYeXrhrcb3BWKFlyuNnUJEJLThH940dCvyKDhZLjramNuqGirjyr1GeSuKpAOo9bEfQ0DZNo0RcZyu5jWoUthWlDQPekLH2R5eJ/wDOCaLJr3E2ps0ijoTEprAuG0DSywgfaIH/AOk4AqlWUzMu02ANTa4epJT9lYJvq9d7YZn0es803LL86n1RaI6JwSBJUm4bUk3F/I4oMSnqw+CTCTmVlv4n7VOxYIlSdrJ33NhwAHLqd99/CgniJSKflurGj05bkqSydMiU7tdzqlKegHXnhh8MacmnZYZW84hlyar2halc9HuoFvQE/wCbHPErIc3MOeDVKUtibAnOhSnIjgcDWrncA3Fhc3xxNodefkfsKfKZiAhDd2yAhA2HyAGDvYtAmte8uubhvPPjpQXtYEpIighIOvgPz9K1840ij5jgRYTtSmNIZcLquybQQtVrDmdrC/zwMweHGX401h9dRnvoaWFlpTaEhdjexIJ2wF1vOlZYq8puDMkNRW16WmwogJSNh/z8cRN57zIUn98kFPU9oR+eGTz8Bbqs6SVDvw7ClrGHYgyyG2nQE9hx8K9AVvN31VR5NVkK0tsDUgHbtHPspHjc/IXxzwGzzTn8jQ6YqQ2iqRlul1lagkuFTil6xfnfVv6YTGRKJUc+1jtayZL1Jjq/bKSpRUtXRCVG5v8AkB52w2Bwvymyi6KFVgs7gplL/wCMc99scThTVCIolOXUWHHrVT7K+zrkBBdHxZt+tt3Ki/MeS6FnCrCp1iBNdlBpLWtiWtsaU8thtgdncHsoSkKQE1aIejgnFRT8FAg4y18PacCUxYGYG0+AmuD/AG436DlipwoTdPpVOn9glSljtVKcUSo7kqP/AIxJmU4y2Ex5CiRuFuFWaMNStX8qUpHPN+aSWactP8PMyuRWpqHWJLeuPUAg6igqKSCATpUCCDa/S3PETeT6nTPZcwIW1Op6Va3Ho6tWlB2JI5jnht5u4fVGs1ZiRX1x6XS4jIaQuS6lK3jq1KKUXva9gCbXtfrjJzFmvL2V8tS6RRViU8tlUdKh7iAr3lfiJ+Qx1rAowMJD76RtDYk8u53DtXNcdnrbmCJEuoA2Omlud+dLvLNQTT4i6BNdhMSo8lcuA7ORqivhxCULbWfshQQgpXyBBBIvcdKxMTPaYpAqCJ7glmpVaoo/qUEJCEoQbC6UJ1C9gCVWTsBcQZrEqOFNJDL8ckkNSGg4kHyvy+GNhym1SfltdVnvQ6fSEL0tsoSlsvL6BDad1fxHYeOAZb7aUlAUQL6Dqf38UyjsqLm0ygnielOT6P8AUPaqtXqu4myEtyJJBPIFJsP/AHDFFFIoWbZMpDKnoM9JJstXaNq872BG9vHGdw3lfUPCyvTFHS7Ncagt+JKiXF/JKU/PBNwxp8JmA9WKmoojt31W2Kkg3V+dh6nDP2ViGM3Jmai5CU242GvflQ3tbiRTFQhCrLJH4+tJyrSY7EdbbepQ1hQ2ASkW6Ac/jjVo0mTVeHtShuNqfjQpCZKFJ3LWpJSu45hJTYg8rpwC1F5R5KuFcxgl4X5kGXMxNPvXMV0Fl9I6oVz+XP4Y+yQ3PkJS4N27vXxDj0OMtTAzKtuPH9+tVMh0JdV4g0ijqAIky22VnpoKhqP/AGhRvj0vmngPl57O+WXqGy63Q3HnWqo0mQpRSAgqQQom6bkaTbxGF1V2aZk3OkfNDTDpgKjKLS4SApIUrYOJBIsNJUCOhxl5X4ymnIrXt7s1RfnOSoobSFWC97G5Ftwnx5nA78TYqCFKsDf99KzjT/emg82knQed9R4caMuIWSsp5X4cV/MlNTMamJqColKKZqzYJWG9XPvbodVv0tg4oeQozkfKFOqFUrKpUmAubUyKg4Bs2kaQL939o6nl904RsLiRl+rZbptLzXFkuIhlKghLetBWAe/stJubk2N+Zxpv8X233atKYZqRW4yIUV0NjcELI1G/dJUq9hfZIxm2S0kZHrDp2rZw7ZVnG724kfSmJC+j7Tn+JdTfmyZIyohttUVv2kl551Se8CvmAkgm/M3A6HF2Dwuyyuh1ef7DmGpsN1F2PEhwZ5Limm1BsqGpSQe+lxVyeWFHljjLOivNO1dE5a4sNEeOhpOoLWACtxVyNyEo9BfxxM3xTpUigxqbOh1pTMMJUssqU1Ze+olSFg2KlKNj44zSSdQ7atTfcUUy5HBXJys7ZagQF1SIiTFfmVCCubdxtASkIJIvpPaLCTuQbG3LGZnPJWVaFBktsUfPkWU697FCkuywI7khZKWzfWSUk2PLlgbHGVgVp+cuBU0hmKhhLnYDUEFRWSrfYE6bb72vjEk8Q6E9KpclLWYXTGmIlj2iQ48gFAUQQlThBN7egvjFTCDrmBrRLquRp4/0Cy3Rs2QMvs1HP5mSGu0EqPLcMZsDVfW5ayT3Tt5jxwAwIdVq/Hep5Jl5qrsugQQtxazLUlzSG0kJKhtcKWEk23tjIg8dJS6rU2pSqomnP9mmGppkdo0dOlW17XKgSOe4tgN4YZxby5mWtVWqmpS5s5XZJkJYK1OHWVLKrnmbJNt+uFs9gNtKUwApfDTjR0V5a1hK1WFO/MHDjLLtCzDJW9miA7T2nCiRUnk9m8oA6Si476SQB094WxhP8MuH1Dm5coOaZtakZiqyE6RF0hvUSAdtJ0pBvuSTsTgUqfFajRMsyYsFurzfbHQSmepS0kBSSqy1qOwA2A6m+J5XE3JdSzNBzFO+sjVobZSwstKIbHeNtIVYnvHfCxU/FFps4VFOtvIW8L3rcQ44VdKk3rcp/Cnh2riHUMoyKhWnqkmz7CGggJbZLaVHWvRYm5PhzG2F3xRomRKbURSMnzKpIqUeW4xO9rALbSEX1FJCRfcePTEuTOJUCNxNruaat7QwuagNsBKO0KEXTsbH7qEjEvC+gs1CpVLMlfQgsKWuQou7oSCoqK1Drc7AHnz8MNMKgy5MizhOUAX5X4+lLMTmtQY5eJvwsN/TzriRHfeoGW4bqFRoKi7KIUdKnFrIFwPuhCUJCjtztyx9mPNqHIiKXTlBMFkAEp2DhHK34R08eeBrPmbHq1XZclBUhpf7NtN/dbHJOBJUxRFsXwls4c0lhvem/mTc0kMVyepMiSLHgOA/yvmX0qTY2BItfHEdhzUVISopHUDFNogKF8bcOWC3osAnwwihqDyhnO6mjt0D4RTCyLmOM/TFUGuFTlOdvoXzUwo/aT5eIwHZ2yrKy1UyghDjDg1supSFIdR4pv8Ap0xDDQqMoOawq5vZODrLOYo0xv6qzJH9upK9uzJ0qZP321fZVh9iDSXIZdI+JIvYbz26/WlsOKtM0bAgJXvB58x1+tLKFVZzTgSwmIVf4kVk/wCpONqkScyw4gYp7KCj2lMpJQEEhYUlW1jy1IQfhtYE3Nc08J1JhqqeXnzU6Sd+1Qn9qz5OoHL+IbemAKPDmZflCQuFGkNj+9ZS62fny/LHPm8UbkC6De3DcfxVScNU2bkW6/et1Kc6zqg3NbpazNRJEpDzbASQvQlBsAbWIQm4tvbFBqDmrLtNq7C6bJajTmgmWt1gq7oJ31dOZ3we5S4j5fLzEatZRoyWVEJcfYSttQT1NgT8hinxNWmnQXBSqhInUSaSIshEgrSkDfsVg8iLeVxgqDPjvu7B9stk7iSCD00GlBS4ctobRlQUnjoQbc95qjRqBmTOMWTOly4kCDLbSwpx0KSHQlevupFye8SSeW9hblj7MdJzJlGkU8B6BUaPDWoNLbb1JQVhYKVg2UAQtXPa/I3wxss1vLrEiGxW0LTF9mZMV5ThEdDegbqSkalG99ged74j4tZlpa6jWYFOMddIjU72cKYCdDiinUFDTsTrUnfyxVKwxv8AplP9c1+FunWpdufMUra6ZbgZba69f3lSupsrPcmLATFp778dqQJrP7rspetbgN9iRdxZte2+2OHn88wZTD6qYtp5iW9NbUWBs46LL2JsR8ME3DlTU6Aw/XqjJhZfhAIkurkFIfsL9i2kbnz5kDbrivmribQFl9ikZMoqUglLbz4W6Sm+xsSLehxKzZsdt3Yx0FZFrkEAA+tU0WJKUNpIUEJ4aEm3mPpQHUzmCRDhMzYjaW4brjrZcCb3WrUoHUrcX6ctzjHm1OU66pLzMJKuvZxWk/6RiaSiVWpSpAiMMIV/dNJaQPS2D/K3DBaYSKtmZ40ulW1JUtP7Z8eDSD/qVt64HXORGTdxVr8OP5otMMvK+AXocyJlN/MVR1PBDUVkBx51SQlDafFX8h19MFGfcxNCEmjUIKRTGN1K+08r76v5DpiDM2Y0BoU2gMew0hrk2kklZ++tXNSj44BZMt1DhdaWUqII9R1xcQ5UaNFCgfiVr2/P0qflYY+uZne1Sj+o4dz1+lZshwrX54mjMthtSnrKvbTY4prIUonljjtFJ2vtieXIBWVHWmgRparcaMy6oAulN/FBOC6g5WjTXEAVApv/AIDh/lgJaUUkWIwS0KpOx3E2fUgDwvththJjqWEuJoGal3Idmqxo0nZXg07uKmLWRzIjrH6jGfHi01t8Xfd2/AR/LFSfMfmpJ7Z5fok/rjFZjPPSw2A8STaw3P64qJTyY7eibjw9KXQGHVLGdZKqe+QanFgPIXFmy0q6aOv5YLsyQcoVFgyKqpqlSFjvSUqQ2F+amzYK+FsBnDGlU6IylyTFkvvAd4KTYX+ZwN8YqrD9sWIkRLT1rkhRJA+WOHY0+zNxLZMNhB4qH+11RplTccLcJuBv9OtYWc8pU0LcdoFZolRAN7R5KWHP+xdgfgThcKMllT0UvrbS5YLbVyVble1wbeOLKKgtagCjXblcm2COmVecwEaH22k3sB2d/wCWLHCsHFgHXc3h63H0qMxDESTdtPzt9Aajy7UKoxDRCXEjVOGglTbT17t356VAggHw5eWKWYlT5X7NxqPCjJOoMtk2v4km5J9cPPKk6UlpvtJupakghKUg6j0Hu4HuIM+pMKeLcxd0i9ikf8Ytvc7tmMSbW5+lvWotjFs8nRsA87n7elJYF2T2TDsp55LQ0obbGyR5X2GDvKeTaS8ttdYrdEpSSR/apIfdH+RFwPiRjrk15VaqgZqCm30q2spO4+QwR5lyv9WMuOwUdmjf/pqP8scxxt5mK6I7aiknjYfc/Sum4XAdks7ddj439KZmWaRkejtCRR5DNaqCBcSluNulB8UNck+ticB+earSqhLcM+dOcevuHFAfqnCkp1QVHqyDISFqSobi6f0wx8zNQazRm3m21su2t3Bf5+OF8RhrDZja5adrm4m+nz+gFMmQZEdz3c5VCg2oJopCtBmqHktP/wAcDM1umlR7P2oeSlp/4xeVSFrK9GtwJ6jGFMjKae0kKG/UWxfz8LShsPoRYHqfvUojEFLUW12JHapkQWXQS204q2+6wMUH0tINuyIPmrDO4YUJmp9s263rOgm1r9MBecKX7BUnm0oIAPXbEU3NQuQpjiKevwSiMl8W1r//2Q==';   // লোগো HTML-এর ভেতরেই বসানো: ইন্টারনেট/ফাইল ছাড়াও আসবে
+document.querySelectorAll('img[data-logo]').forEach(i => { i.src = LOGO_SRC; });
+const $ = id => document.getElementById(id);
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+
+const BASE = atob('aHR0cHM6Ly9taW4tYm90LWVtZjgub25yZW5kZXIuY29tL2FwaS92MQ==');
+function loadKey(){
+  let k = '';
+  try { if (window.Android && window.Android.getKey) k = window.Android.getKey() || ''; } catch(e){}
+  return k || (store.get('cfg', {}) || {}).key || '';
+}
+function saveKey(k){
+  if (loadKey()) return false;
+  store.set('cfg', { key: k });
+  try { if (window.Android && window.Android.saveKey) window.Android.saveKey(k); } catch(e){}
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
+  return true;
+}
+let cfg = { key: loadKey() };
+let ranges = store.get('ranges', ['26134']);
+let activeRid = store.get('activeRid', ranges[0] || '');
+let history = store.get('history', []);
+let jobSeq = 0;
+
+const WAIT_SECONDS = 25;
+const MAX_MINUTES = 20;          // নাম্বারের অপেক্ষার সময় (মিনিট)
+const COLLAPSE_MS = 60000;       // OTP আসার/কপির এক মিনিট পর কার্ড ছোট হয়ে যাবে
+
+function toast(msg){
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 1800);
+}
+async function copy(text){
+  text = String(text == null ? '' : text);
+  if (!text) return false;
+  const ok = await silentCopy(text);          // নেটিভ ব্রিজ আগে (ফোনে এটাই নির্ভরযোগ্য), না থাকলে ব্রাউজারের পদ্ধতি
+  try { navigator.vibrate && navigator.vibrate(30); } catch(e){}
+  toast(ok ? 'কপি হয়েছে' : 'কপি করা যায়নি, আবার চাপুন');
+  return ok;
+}
+/* ---------- কান্ট্রি কোড ---------- */
+const CC = new Set(['1','7']);
+[[20,20],[27,27],[30,34],[36,36],[39,41],[43,49],[51,58],[60,66],[81,82],[84,84],[86,86],[90,95],[98,98],
+ [211,213],[216,216],[218,218],[220,258],[260,269],[290,291],[297,299],[350,359],[370,389],[420,421],[423,423],
+ [500,509],[590,599],[670,692],[850,850],[852,853],[855,856],[880,880],[886,886],[960,968],[970,977],[992,996],[998,998]
+].forEach(([a,b]) => { for (let i = a; i <= b; i++) CC.add(String(i)); });
+
+function stripCode(digits){
+  digits = String(digits || '').replace(/\D/g, '');
+  for (let n = 1; n <= 3; n++){
+    if (CC.has(digits.slice(0, n)) && digits.length > n + 4) return digits.slice(n);
+  }
+  return digits;
+}
+function numberToCopy(j){
+  if (!j) return '';
+  const digits = String(j.number || j.full || '').replace(/\D/g, '');
+  return withCode ? '+' + digits : stripCode(digits);
+}
+
+/* অটো কপি: ব্রাউজার আটকালে পরের ট্যাপে কপি হবে */
+let pendingCopy = null;
+async function silentCopy(text){
+  try {
+    if (window.Android && window.Android.copyText){ window.Android.copyText(text); return true; }
+  } catch(e){}
+  try { await navigator.clipboard.writeText(text); return true; } catch(e){}
+  try {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove(); return !!ok;
+  } catch(e){ return false; }
+}
+async function autoCopy(text){
+  if (!text) return;
+  if (await silentCopy(text)){
+    pendingCopy = null;
+    try { navigator.vibrate && navigator.vibrate(30); } catch(e){}
+    toast('কপি হয়েছে: ' + text);
+  } else {
+    pendingCopy = text;
+    toast('কপি করতে স্ক্রিনে একবার ট্যাপ করুন');
+  }
+}
+['pointerdown', 'keydown', 'focus'].forEach(ev => window.addEventListener(ev, async () => {
+  if (!pendingCopy) return;
+  const t = pendingCopy;
+  if (await silentCopy(t)){ pendingCopy = null; toast('কপি হয়েছে: ' + t); }
+}, true));
+
+let withCode = store.get('withCode', false);
+function syncOpt(){
+  $('optCode').checked = withCode;
+  $('optHint').textContent = withCode ? 'কোড সহ কপি হবে (যেমন +880...)' : 'টিক না দিলে কোড ছাড়া কপি হবে';
+}
+$('optCode').onchange = () => {
+  withCode = $('optCode').checked; store.set('withCode', withCode); syncOpt();
+  if (lastJob && lastJob.number) autoCopy(numberToCopy(lastJob));
+};
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function cleanBase(v){
+  v = (v || '').trim().replace(/\/+$/, '');
+  if (!v) return '';
+  if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
+  if (!/\/api\/v1$/i.test(v)) v += '/api/v1';
+  return v;
+}
+
+async function api(path, opts){
+  const base = BASE;
+  const key = loadKey();
+  if (!key) return { fail: 'আগে API Key দিন' };
+  const headers = Object.assign({ mauthapi: key }, (opts && opts.headers) || {});
+  try {
+    const res = await fetch(base + path, Object.assign({}, opts, { headers }));
+    const text = await res.text();
+    try { return { json: JSON.parse(text) }; }
+    catch(e){ return { fail: 'সার্ভার থেকে সঠিক উত্তর আসেনি (HTTP ' + res.status + ')' }; }
+  } catch(e){
+    return { fail: 'নেটওয়ার্ক সমস্যা। সার্ভার ঘুমিয়ে থাকলে ৩০-৫০ সেকেন্ড পর আবার চেষ্টা করুন।' };
+  }
+}
+
+/* ---------- settings ---------- */
+$('btnSettings').onclick = () => {
+  const s = $('settings'); s.hidden = !s.hidden;
+  $('btnSettings').setAttribute('aria-expanded', String(!s.hidden));
+};
+$('btnSave').onclick = () => {
+  if (loadKey()){ toast('Key লক করা আছে'); return; }
+  const k = $('key').value.trim();
+  if (!k){ toast('API Key খালি রাখা যাবে না'); return; }
+  if (!saveKey(k)){ toast('Key লক করা আছে'); return; }
+  cfg.key = k; applyLock();
+  $('settings').hidden = true;
+  toast('সেভ হয়েছে');
+};
+function applyLock(){
+  const k = loadKey(), on = !!k;
+  $('key').disabled = on; $('btnSave').hidden = on;
+  $('btnSettings').hidden = on; if (on) $('settings').hidden = true;
+  $('key').value = on ? (k.length > 8 ? k.slice(0, 3) + '••••••' + k.slice(-2) : '••••••') : '';
+  $('keyNote').textContent = on ? 'API Key সেভ করা আছে এবং লক করা। এটা আর বদলানো যায় না।' : 'শুধু API Key দিলেই সংযোগ হয়ে যাবে। একবার সেভ করলে আর বদলানো যাবে না।';
+}
+applyLock();
+(function(){
+  $('lnkBot').href = LINKS.bot;
+  const c = $('lnkChannel');
+  if (LINKS.channel){ c.href = LINKS.channel; c.hidden = false; }
+})();
+function setSetup(on){ const s = $('setup'); s.classList.toggle('open', on); s.setAttribute('aria-hidden', String(!on)); }
+let armed = 0, armT = 0;
+$('setupSave').onclick = () => {
+  const k = $('setupKey').value.trim();
+  if (k.length < 4){ toast('সঠিক API Key দিন'); return; }
+  if (!armed){
+    armed = 1; $('setupSave').textContent = 'নিশ্চিত করুন: এরপর আর বদলানো যাবে না';
+    clearTimeout(armT); armT = setTimeout(() => { armed = 0; $('setupSave').textContent = 'সেভ করুন'; }, 5000);
+    return;
+  }
+  armed = 0; clearTimeout(armT); $('setupSave').textContent = 'সেভ করুন';
+  if (!saveKey(k)){ toast('Key আগেই সেভ করা আছে'); setSetup(false); return; }
+  cfg.key = k; $('setupKey').value = ''; applyLock();
+  setSetup(false); toast('সেভ হয়েছে');
+};
+$('setupKey').onkeydown = e => { if (e.key === 'Enter') $('setupSave').click(); };
+if (!loadKey()) setSetup(true);
+
+/* ---------- ranges ---------- */
+function renderRanges(){
+  $('chips').innerHTML = '';
+  if (!ranges.length){ $('chips').innerHTML = '<p class="empty">একটা রেঞ্জ যোগ করুন</p>'; return; }
+  ranges.forEach(r => {
+    const c = document.createElement('div');
+    c.className = 'chip'; c.tabIndex = 0; c.setAttribute('role', 'button');
+    c.setAttribute('aria-pressed', String(r === activeRid));
+    c.innerHTML = esc(r) + '<button class="x" aria-label="' + esc(r) + ' মুছুন">×</button>';
+    c.onclick = () => { activeRid = r; store.set('activeRid', r); renderRanges(); };
+    c.onkeydown = e => { if (e.key === 'Enter') c.click(); };
+    c.querySelector('.x').onclick = e => {
+      e.stopPropagation();
+      ranges = ranges.filter(x => x !== r);
+      if (activeRid === r) activeRid = ranges[0] || '';
+      store.set('ranges', ranges); store.set('activeRid', activeRid); renderRanges();
+    };
+    $('chips').appendChild(c);
+  });
+}
+$('btnAdd').onclick = () => {
+  const v = $('newRid').value.trim();
+  if (!v) return;
+  if (!ranges.includes(v)) ranges.push(v);
+  activeRid = v; $('newRid').value = '';
+  store.set('ranges', ranges); store.set('activeRid', activeRid); renderRanges();
+};
+
+/* ---------- history ---------- */
+function renderHistory(){
+  const ul = $('hist');
+  if (!history.length){ ul.innerHTML = '<p class="empty">এখনো কোনো নাম্বার নেওয়া হয়নি।</p>'; return; }
+  ul.innerHTML = '';
+  history.forEach(h => {
+    const li = document.createElement('li');
+    li.innerHTML = '<div class="hl"><div class="av">' + esc((h.service || '#').charAt(0).toUpperCase()) + '</div><div><b>' + esc(h.full) + '</b><div class="meta">' + esc(h.time) + (h.service ? ' · ' + esc(h.service) : '') + '</div></div></div>' +
+      '<div style="text-align:right">' + (h.otp ? '<div class="otpv">' + esc(h.otp) + '</div>' : '<div class="meta">OTP আসেনি</div>') + '</div>';
+    li.style.cursor = 'pointer';
+    li.onclick = () => copy(h.otp || h.full);
+    ul.appendChild(li);
+  });
+}
+$('btnClear').onclick = () => {
+  if (!history.length) return;
+  if (confirm('আগের সব নাম্বারের তালিকা মুছে ফেলবেন?')){ history = []; store.set('history', history); renderHistory(); }
+};
+function saveHistory(c){
+  if (!c || !c.full) return;
+  const i = history.findIndex(h => h.id === c.id);
+  const item = { id: c.id, full: c.full, otp: c.otp || '', service: c.service || '', time: c.time };
+  if (i >= 0) history[i] = item; else history.unshift(item);
+  history = history.slice(0, 30);
+  store.set('history', history); renderHistory();
+}
+
+/* ---------- নাম্বার কার্ড: প্রতিটা নাম্বার আলাদা করে ব্যাকগ্রাউন্ডে চলে ---------- */
+const jobs = [];
+const MAX_ACTIVE = 10;
+let lastJob = null;
+const pad = n => String(Math.floor(n)).padStart(2, '0');
+
+function jobStatus(j, kind, text, spin){
+  const s = j.q('status'); s.className = 'status ' + (kind || '');
+  s.innerHTML = (spin ? '<div class="spin"></div>' : '') + '<span>' + esc(text) + '</span>';
+}
+function jobButtons(j, list){
+  const b = j.q('btns'); b.innerHTML = '';
+  list.forEach(x => {
+    const el = document.createElement('button');
+    el.textContent = x.label; if (x.ghost) el.className = 'ghost';
+    el.onclick = x.fn; b.appendChild(el);
+  });
+}
+function jobStopTick(j){
+  clearInterval(j.tickT); j.q('track').hidden = true; j.el.classList.remove('waiting');
+}
+function jobStartTick(j, tok){
+  clearInterval(j.tickT);
+  const t0 = Date.now(), bar = j.q('bar'), tm = j.q('timer');
+  j.q('track').hidden = false; bar.style.width = '0'; j.el.classList.add('waiting');
+  j.tickT = setInterval(() => {
+    if (tok !== j.tok){ clearInterval(j.tickT); return; }
+    const sec = (Date.now() - t0) / 1000;
+    tm.textContent = pad(sec / 60) + ':' + pad(sec % 60);
+    bar.style.width = Math.min(100, sec / (MAX_MINUTES * 60) * 100) + '%';
+  }, 500);
+}
+function jobShowOtp(j){
+  j.q('otp').innerHTML = '<div class="otp">' + String(j.otp).split('').map(d => '<span>' + esc(d) + '</span>').join('') + '</div>';
+  j.q('otp').firstChild.onclick = () => { copy(j.otp); armCollapse(j); };
+}
+function removeJob(j){
+  j.tok++; clearInterval(j.tickT); clearTimeout(j.collapseT); j.el.remove();
+  const i = jobs.indexOf(j); if (i >= 0) jobs.splice(i, 1);
+  if (lastJob === j) lastJob = jobs[jobs.length - 1] || null;
+}
+/* OTP আসা/কপির COLLAPSE_MS পর কার্ড এক লাইনের ছোট সারিতে চলে যায়; সারিতে ট্যাপ করলে আবার বড় হয় */
+function miniJob(j){
+  if (!j.otp) return;
+  clearTimeout(j.collapseT);
+  j.q('mnum').textContent = j.full; j.q('motp').textContent = j.otp;
+  j.el.classList.add('mini');
+}
+function armCollapse(j){
+  clearTimeout(j.collapseT);
+  if (!j.otp) return;
+  j.collapseT = setTimeout(() => miniJob(j), COLLAPSE_MS);
+}
+function activeCount(){ return jobs.filter(j => j.polling).length; }
+
+let serialNo = 0;
+function newJobCard(rid){
+  const j = { id: Date.now() * 100 + (jobSeq++ % 100), rid, full: '', number: '', otp: '', service: '', tok: 0, tickT: 0, collapseT: 0, polling: false, time: '', serial: ++serialNo };
+  const el = document.createElement('section'); el.className = 'card job';
+  el.innerHTML =
+    '<div class="row"><div class="meta"><b class="sn">#' + j.serial + '</b><span data-k="meta"></span></div><div class="timer" data-k="timer"></div></div>' +
+    '<div class="row"><div class="number" data-k="num">...</div><button class="ghost icon" data-k="copy">কপি</button></div>' +
+    '<div data-k="otp"></div><div class="status" data-k="status"></div>' +
+    '<div class="track" data-k="track" hidden><i data-k="bar"></i></div><div class="btns" data-k="btns"></div>' +
+    '<div class="mini" data-k="mini"><b class="sn">#' + j.serial + '</b><span class="mn" data-k="mnum"></span><span class="mo" data-k="motp"></span><button class="ghost" data-k="mcp">কপি</button></div>';
+  j.el = el; j.q = k => el.querySelector('[data-k="' + k + '"]');
+  j.q('meta').textContent = 'রেঞ্জ ' + rid;
+  j.q('copy').onclick = () => { if (j.number){ copy(numberToCopy(j)); armCollapse(j); } };
+  j.q('mcp').onclick = e => { e.stopPropagation(); copy(j.otp); };
+  j.q('mini').onclick = e => { if (e.target.closest('button')) return; el.classList.remove('mini'); armCollapse(j); };
+  $('jobs').appendChild(el); jobs.push(j);          // পুরনোটা উপরে, নতুনটা নিচে: সিরিয়াল ক্রমে জমে
+  while (jobs.length > 20){                         // তালিকা যাতে বড় না হয়: সবচেয়ে পুরনো শেষ হয়ে যাওয়াটা সরে যাবে
+    const old = jobs.find(x => !x.polling && x !== j); if (!old) break; removeJob(old);
+  }
+  try { el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch(e){}
+  return j;
+}
+
+async function pollJob(j){
+  const tok = ++j.tok, num = j.number;
+  const deadline = Date.now() + MAX_MINUTES * 60000;
+  let errs = 0;
+  j.polling = true; j.q('otp').innerHTML = ''; j.el.classList.remove('done');
+  jobStatus(j, '', 'OTP-র জন্য অপেক্ষা করা হচ্ছে...', true);
+  jobStartTick(j, tok);
+  jobButtons(j, [{ label: 'অপেক্ষা বন্ধ করুন', ghost: true, fn: () => { j.tok++; j.polling = false; jobStopped(j); } }]);
+
+  while (tok === j.tok){
+    if (Date.now() > deadline){ j.polling = false; return jobFinish(j, 'warn', MAX_MINUTES + ' মিনিটে OTP আসেনি'); }
+    const t0 = Date.now();
+    const r = await api('/otp?number=' + encodeURIComponent(num) + '&wait=' + WAIT_SECONDS);
+    if (tok !== j.tok) return;
+    if (r.fail){
+      if (++errs >= 4){ j.polling = false; return jobFinish(j, 'err', r.fail); }
+      await sleep(1500); continue;
+    }
+    const x = r.json;
+    if (x.meta && x.meta.code === 200 && x.data){
+      j.polling = false;
+      j.otp = x.data.otp; j.service = x.data.service || '';
+      jobStopTick(j); saveHistory(j); jobShowOtp(j);
+      j.el.classList.add('done');
+      j.q('timer').textContent = '✓';
+      notifyHost('otp', j.otp);
+      lastJob = j;
+      autoCopy(String(j.otp));
+      armCollapse(j);
+      try { navigator.vibrate && navigator.vibrate([120, 60, 120]); } catch(e){}
+      jobStatus(j, 'ok', 'OTP এসেছে' + (j.service ? ' (' + j.service + ')' : ''));
+      jobButtons(j, [
+        { label: 'OTP কপি করুন', fn: () => { copy(j.otp); armCollapse(j); } },
+        { label: 'ছোট করুন', ghost: true, fn: () => miniJob(j) },
+        { label: 'সরিয়ে দিন', ghost: true, fn: () => removeJob(j) }
+      ]);
+      return;
+    }
+    if (x.meta && x.meta.code === 404){ j.polling = false; return jobFinish(j, 'err', 'নাম্বারের মেয়াদ শেষ বা পাওয়া যায়নি'); }
+    if (x.meta && x.meta.status === 'waiting'){
+      if (Date.now() - t0 < 1000) await sleep(300);
+      continue;
+    }
+    if (++errs >= 4){ j.polling = false; return jobFinish(j, 'err', 'অপ্রত্যাশিত উত্তর: ' + JSON.stringify(x).slice(0, 120)); }
+    await sleep(800);
+  }
+}
+function jobFinish(j, kind, text){
+  jobStopTick(j); jobStatus(j, kind, text);
+  jobButtons(j, [
+    { label: 'আবার অপেক্ষা করুন', fn: () => pollJob(j) },
+    { label: 'সরিয়ে দিন', ghost: true, fn: () => removeJob(j) }
+  ]);
+}
+function jobStopped(j){
+  jobStopTick(j); jobStatus(j, 'warn', 'অপেক্ষা বন্ধ করা হয়েছে');
+  jobButtons(j, [
+    { label: 'আবার অপেক্ষা করুন', fn: () => pollJob(j) },
+    { label: 'সরিয়ে দিন', ghost: true, fn: () => removeJob(j) }
+  ]);
+}
+
+async function getNumber(){
+  if (!activeRid){ toast('আগে একটা রেঞ্জ বাছুন'); return; }
+  if (activeCount() >= MAX_ACTIVE){ toast('একসাথে সর্বোচ্চ ' + MAX_ACTIVE + 'টা নাম্বার চলবে'); return; }
+  $('btnGet').disabled = true;
+  const j = newJobCard(activeRid);
+  jobStatus(j, '', 'নাম্বার আনা হচ্ছে...', true);
+  const r = await api('/getnum', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rid: j.rid }) });
+  $('btnGet').disabled = false;
+  const fail = text => {
+    j.q('num').textContent = '-'; jobStatus(j, 'err', text);
+    jobButtons(j, [
+      { label: 'আবার চেষ্টা করুন', fn: () => { removeJob(j); getNumber(); } },
+      { label: 'সরিয়ে দিন', ghost: true, fn: () => removeJob(j) }
+    ]);
+  };
+  if (r.fail){ fail(r.fail); return; }
+  const x = r.json, code = x.meta && x.meta.code;
+  if (code === 200 && x.data){
+    j.full = x.data.full_number || ('+' + x.data.no_plus_number);
+    j.number = x.data.no_plus_number || (x.data.full_number || '').replace('+', '');
+    j.time = new Date().toLocaleString('bn-BD', { hour: 'numeric', minute: '2-digit', day: 'numeric', month: 'short' });
+    j.q('num').textContent = j.full;
+    j.q('meta').textContent = 'রেঞ্জ ' + j.rid + (x.data.country ? ' · ' + x.data.country : '');
+    j.t0 = Date.now();
+    lastJob = j;
+    saveHistory(j);
+    notifyHost('number', j.number, j.full);
+    autoCopy(numberToCopy(j));
+    pollJob(j);
+  } else if (code === 2946) fail('এই রেঞ্জে এখন নাম্বার নেই। অন্য রেঞ্জ বা একটু পরে চেষ্টা করুন।');
+  else if (code === 401) fail('API Key ভুল। সেটিংসে ঠিক করুন।');
+  else fail('সমস্যা: ' + JSON.stringify(x).slice(0, 140));
+}
+
+$('btnGet').onclick = getNumber;
+
+/* হোস্ট অ্যাপে নাম্বার/OTP পাঠায়: Android WebView বা ওয়েবপেজের iframe */
+function notifyHost(type, a, b){
+  try {
+    if (window.Android){
+      if (type === 'number' && window.Android.onNumber) window.Android.onNumber(a, b || a);
+      if (type === 'otp' && window.Android.onOtp) window.Android.onOtp(a);
+    } else if (window.parent !== window){
+      window.parent.postMessage({ type: 'otp-' + type, value: a, full: b }, '*');
+    }
+  } catch(e){}
+}
+function closePopup(){
+  store.set('jobs', []);
+  if (window.Android && window.Android.close) window.Android.close();
+  else if (window.parent !== window) window.parent.postMessage('otp-close', '*');
+  else window.close();
+}
+$('btnClose').onclick = closePopup; $('sClose').onclick = closePopup;
+
+const doMin = () => { close2fa(); if (window.Android && window.Android.minimize) window.Android.minimize(); };
+$('btnMin').onclick = doMin; $('sMin').onclick = doMin;
+if (window.Android){
+  const g = document.querySelector('.grab'); if (g) g.style.display = 'none';
+  if (window.Android.minimize){ $('btnMin').hidden = false; $('sMin').hidden = false; }
+  if (window.Android.close) $('sClose').hidden = false;
+  const isIn = el => el && /^(INPUT|TEXTAREA)$/.test(el.tagName);
+  document.addEventListener('focusin', e => { if (isIn(e.target) && window.Android.setFocusable) window.Android.setFocusable(true); });
+  document.addEventListener('focusout', () => setTimeout(() => {
+    if (!isIn(document.activeElement) && window.Android.setFocusable) window.Android.setFocusable(false);
+  }, 250));
+}
+/* ---------- বজ্রপাত (কাচের নিচের স্তরে) ---------- */
+(function(){
+  const cv = $('bolt'), cx = cv.getContext('2d');
+  if (!cx || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  let W = 0, H = 0, D = 1, raf = 0;
+  function size(){ D = Math.min(window.devicePixelRatio || 1, 2); W = cv.width = innerWidth * D; H = cv.height = innerHeight * D; }
+  size(); addEventListener('resize', size);
+  function path(x, y, steps, stepY, drift, w, out, d){
+    for (let i = 0; i < steps; i++){
+      const nx = x + (Math.random() - .5) * drift, ny = y + stepY * (.6 + Math.random() * .8);
+      out.push([x, y, nx, ny, w]);
+      if (d < 2 && Math.random() < .22) path(nx, ny, 3 + (Math.random() * 3 | 0), stepY * .8, drift * 1.3, w * .55, out, d + 1);
+      x = nx; y = ny;
+    }
+  }
+  function strike(){
+    if (document.hidden) return;
+    const light = matchMedia('(prefers-color-scheme:light)').matches && document.documentElement.dataset.theme !== 'dark';
+    const core = light ? '106,69,255' : '255,255,255', glow = light ? '36,87,255' : '120,165,255';
+    const stepY = H / 20, segs = [];
+    path(W * (.12 + Math.random() * .76), -10, Math.round(H * (.5 + Math.random() * .45) / stepY), stepY, 70 * D, 3 * D, segs, 0);
+    const t0 = performance.now(), dur = 750;
+    cancelAnimationFrame(raf);
+    (function frame(now){
+      const t = (now - t0) / dur; cx.clearRect(0, 0, W, H);
+      if (t >= 1) return;
+      const f = t < .12 ? 1 : t < .2 ? .2 : t < .3 ? .9 : Math.max(0, 1 - (t - .3) / .7) * .6;
+      cx.fillStyle = 'rgba(' + glow + ',' + (f * .14) + ')'; cx.fillRect(0, 0, W, H);
+      cx.lineCap = 'round'; cx.lineJoin = 'round';
+      cx.shadowColor = 'rgb(' + glow + ')'; cx.shadowBlur = 22 * D;
+      segs.forEach(s => {
+        cx.beginPath(); cx.moveTo(s[0], s[1]); cx.lineTo(s[2], s[3]);
+        cx.strokeStyle = 'rgba(' + glow + ',' + (f * .6) + ')'; cx.lineWidth = s[4] * 3; cx.stroke();
+        cx.strokeStyle = 'rgba(' + core + ',' + f + ')'; cx.lineWidth = s[4] * .8; cx.stroke();
+      });
+      cx.shadowBlur = 0;
+      raf = requestAnimationFrame(frame);
+    })(t0);
+    if (Math.random() < .3) setTimeout(strike, 260);
+  }
+  (function next(){ setTimeout(() => { strike(); next(); }, 3500 + Math.random() * 5000); })();
+  setTimeout(strike, 1200);
+})();
+
+/* ---------- 2FA (TOTP, RFC 6238) ---------- */
+function sha1(m){
+  const l = m.length, n = ((l + 8 >> 6) + 1) * 16, w = new Array(n).fill(0);
+  for (let i = 0; i < l; i++) w[i >> 2] |= m[i] << (24 - (i % 4) * 8);
+  w[l >> 2] |= 0x80 << (24 - (l % 4) * 8); w[n - 1] = l * 8;
+  let h0 = 0x67452301, h1 = 0xEFCDAB89, h2 = 0x98BADCFE, h3 = 0x10325476, h4 = 0xC3D2E1F0;
+  const rol = (x, s) => (x << s) | (x >>> (32 - s));
+  for (let i = 0; i < n; i += 16){
+    const x = w.slice(i, i + 16);
+    for (let t = 16; t < 80; t++) x[t] = rol(x[t-3] ^ x[t-8] ^ x[t-14] ^ x[t-16], 1);
+    let a = h0, b = h1, c = h2, d = h3, e = h4;
+    for (let t = 0; t < 80; t++){
+      const f = t < 20 ? (b & c) | (~b & d) : t < 40 ? b ^ c ^ d : t < 60 ? (b & c) | (b & d) | (c & d) : b ^ c ^ d;
+      const k = t < 20 ? 0x5A827999 : t < 40 ? 0x6ED9EBA1 : t < 60 ? 0x8F1BBCDC : 0xCA62C1D6;
+      const tmp = (rol(a, 5) + f + e + k + x[t]) | 0; e = d; d = c; c = rol(b, 30); b = a; a = tmp;
+    }
+    h0 = (h0 + a) | 0; h1 = (h1 + b) | 0; h2 = (h2 + c) | 0; h3 = (h3 + d) | 0; h4 = (h4 + e) | 0;
+  }
+  const o = new Uint8Array(20);
+  [h0, h1, h2, h3, h4].forEach((h, i) => { for (let j = 0; j < 4; j++) o[i * 4 + j] = (h >>> (24 - j * 8)) & 255; });
+  return o;
+}
+function hmac1(key, msg){
+  if (key.length > 64) key = sha1(key);
+  const k = new Uint8Array(64); k.set(key);
+  const ip = new Uint8Array(64 + msg.length), op = new Uint8Array(84);
+  for (let i = 0; i < 64; i++){ ip[i] = k[i] ^ 0x36; op[i] = k[i] ^ 0x5c; }
+  ip.set(msg, 64); op.set(sha1(ip), 64);
+  return sha1(op);
+}
+function b32(s){
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; let bits = '', out = [];
+  for (const c of String(s).replace(/[\s=-]/g, '').toUpperCase()){
+    const v = A.indexOf(c); if (v < 0) return null;
+    bits += v.toString(2).padStart(5, '0');
+  }
+  for (let i = 0; i + 8 <= bits.length; i += 8) out.push(parseInt(bits.slice(i, i + 8), 2));
+  return new Uint8Array(out);
+}
+function totp(secret, t){
+  const key = b32(secret); if (!key || !key.length) return null;
+  let v = Math.floor((t == null ? Date.now() : t) / 30000); const m = new Uint8Array(8);
+  for (let i = 7; i >= 0; i--){ m[i] = v & 255; v = Math.floor(v / 256); }
+  const h = hmac1(key, m), o = h[19] & 15;
+  const n = (((h[o] & 127) << 24) | (h[o+1] << 16) | (h[o+2] << 8) | h[o+3]) % 1000000;
+  return String(n).padStart(6, '0');
+}
+let accts = store.get('totp', []), tEls = [], selIdx = 0, lastAuto = '';
+function render2fa(){
+  const box = $('tlist'); box.innerHTML = ''; tEls = [];
+  if (!accts.length){ box.innerHTML = '<p class="empty">এখনো কোনো অ্যাকাউন্ট নেই।</p>'; return; }
+  accts.forEach((a, i) => {
+    const d = document.createElement('div'); d.className = 'titem' + (i === selIdx ? ' sel' : '');
+    d.innerHTML = '<div class="tl"><b>' + esc(a.name) + '</b><div class="tact"><button class="ghost cp" aria-label="কোড কপি">কপি</button><button class="ghost del" aria-label="মুছুন">×</button></div></div><div class="tcode" role="button" tabindex="0">------</div><div class="ttrack"><i></i></div>';
+    const e = { a, el: d, code: d.querySelector('.tcode'), bar: d.querySelector('.ttrack i'), cur: '' };
+    e.code.onclick = () => { if (!e.cur){ toast('কোড তৈরি হয়নি'); return; } selIdx = i; lastAuto = e.cur; markSel(); copy(e.cur); };
+    d.querySelector('.cp').onclick = e.code.onclick;
+    e.code.onkeydown = ev => { if (ev.key === 'Enter') e.code.click(); };
+    d.querySelector('.del').onclick = () => {
+      if (!confirm(a.name + ' মুছে ফেলবেন?')) return;
+      accts.splice(i, 1); store.set('totp', accts);
+      if (i < selIdx) selIdx--; selIdx = Math.max(0, Math.min(selIdx, accts.length - 1)); lastAuto = '';
+      render2fa(); tick2fa(); autoCopyNow();
+    };
+    box.appendChild(d); tEls.push(e);
+  });
+}
+function markSel(){ tEls.forEach((x, k) => x.el.classList.toggle('sel', k === selIdx)); }
+/* নির্বাচিত অ্যাকাউন্টের কোড নিজে কপি হয়: খুললে/যোগ করলে (বার্তা সহ), আর প্রতি ৩০ সেকেন্ডে কোড বদলালে (চুপচাপ) */
+function autoCopyNow(){ const e = tEls[selIdx]; if (!e || !e.cur) return; lastAuto = e.cur; autoCopy(e.cur); }
+function autoCopy2fa(){ const e = tEls[selIdx]; if (!e || !e.cur || e.cur === lastAuto) return; lastAuto = e.cur; silentCopy(e.cur); }
+function close2fa(){ $('twofa').classList.remove('open'); $('twofa').setAttribute('aria-hidden', 'true'); }
+function tick2fa(){
+  const t = Date.now(), left = 30 - ((t / 1000) % 30);
+  tEls.forEach(e => {
+    const c = totp(e.a.secret, t); e.cur = c || '';
+    e.code.textContent = c ? c.slice(0, 3) + ' ' + c.slice(3) : '------';
+    e.bar.style.width = (left / 30 * 100) + '%';
+    e.bar.style.background = left < 6 ? 'var(--err)' : 'var(--accent)';
+  });
+}
+setInterval(() => { if ($('twofa').classList.contains('open')){ tick2fa(); autoCopy2fa(); } }, 1000);
+$('btn2fa').onclick = () => {
+  $('twofa').classList.add('open'); $('twofa').setAttribute('aria-hidden', 'false');
+  selIdx = Math.max(0, Math.min(selIdx, accts.length - 1));
+  render2fa(); tick2fa(); autoCopyNow();
+};
+$('t2Back').onclick = close2fa;
+/* পেস্ট: অ্যাপে নেটিভ ব্রিজ দিয়ে ক্লিপবোর্ড পড়ে (ভাসমান উইন্ডো থেকে সরাসরি পড়া যায় না), ব্রাউজারে navigator.clipboard */
+function applyPaste(t){
+  t = String(t || '').trim();
+  if (!t){ toast('ক্লিপবোর্ডে কিছু পাওয়া যায়নি'); return; }
+  $('tSecret').value = t; toast('পেস্ট হয়েছে');
+}
+window.__pasted = applyPaste;
+$('tPaste').onclick = async () => {
+  if (window.Android && window.Android.readClipboard){ window.Android.readClipboard(); return; }
+  try { applyPaste(await navigator.clipboard.readText()); }
+  catch(e){ toast('পেস্ট করা যায়নি, ঘরে লং-প্রেস করে পেস্ট করুন'); }
+};
+$('tAdd').onclick = () => {
+  let name = '', s = $('tSecret').value.trim();
+  if (/^otpauth:/i.test(s)){
+    try { const u = new URL(s); s = u.searchParams.get('secret') || ''; if (!name) name = decodeURIComponent(u.pathname.replace(/^\/+/, '')); } catch(e){}
+  }
+  s = s.replace(/[\s-]/g, '').toUpperCase();
+  if (!totp(s)){ toast('সিক্রেট কী সঠিক নয়'); return; }
+  if (!name) name = 'অ্যাকাউন্ট ' + (accts.length + 1);
+  accts.push({ name, secret: s }); store.set('totp', accts);
+  $('tSecret').value = ''; selIdx = accts.length - 1; render2fa(); tick2fa(); autoCopyNow();
+};
+
+/* ---------- অ্যাপ কেটে দিলেও কাজ চলে: চলমান নাম্বার মনে রাখা ও আবার চালু করা ---------- */
+const IS_OVERLAY = !!(window.Android && window.Android.minimize);
+if (IS_OVERLAY){
+  const saveJobsNow = () => store.set('jobs', jobs.filter(j => j.polling && j.number).map(j => ({ rid: j.rid, full: j.full, number: j.number, time: j.time, t0: j.t0 || Date.now() })));
+  window.saveJobsNow = saveJobsNow;          // অ্যাপ কেটে দেওয়ার মুহূর্তে native থেকে ডাকা হয়
+  setInterval(saveJobsNow, 3000);
+  addEventListener('pagehide', saveJobsNow);
+  (store.get('jobs', []) || []).forEach(o => {
+    if (!o || !o.number || Date.now() - (o.t0 || 0) > (MAX_MINUTES + 5) * 60000) return;
+    const j = newJobCard(o.rid);
+    j.full = o.full; j.number = o.number; j.time = o.time; j.t0 = o.t0;
+    j.q('num').textContent = j.full; j.q('meta').textContent = 'রেঞ্জ ' + o.rid;
+    lastJob = j; pollJob(j);
+  });
+}
+
+syncOpt(); renderRanges(); renderHistory();
+</script>
+</body>
+</html>
